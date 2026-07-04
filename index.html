@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Study Telemetry - Ultimate Focus Loop</title>
+    <title>F1 Study Telemetry - Ultimate Focus Loop v0.0.3</title>
     <style>
         :root {
             --bg-main: #141923;
@@ -27,6 +27,14 @@
             height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 版本號標記 */
+        .version-tag {
+            position: absolute; bottom: 10px; right: 15px;
+            font-family: monospace; font-size: 10px; color: #4a5568;
+            z-index: 100; pointer-events: none;
         }
 
         /* 語言切換選單 */
@@ -42,7 +50,7 @@
             width: 100%; height: 100%;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            padding: 40px; text-align: center;
+            padding: 20px; text-align: center;
             background: radial-gradient(circle at center, #1e253a 0%, #0e121a 100%);
             z-index: 20; position: relative;
         }
@@ -52,24 +60,25 @@
         }
         #intro-page h1 span { color: var(--f1-red); }
         #intro-page .subtitle {
-            font-size: 1.1rem; color: var(--text-dark); margin-bottom: 30px; letter-spacing: 4px; font-weight: bold;
+            font-size: 1.1rem; color: var(--text-dark); margin-bottom: 25px; letter-spacing: 4px; font-weight: bold;
         }
 
         .features-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-            max-width: 950px; width: 100%; margin-bottom: 5px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+            max-width: 900px; width: 100%; margin-bottom: 5px;
         }
         .feature-card {
-            background: var(--panel-bg); border: 1px solid #2d3748; padding: 22px; border-radius: 12px; text-align: left;
+            background: var(--panel-bg); border: 1px solid #2d3748; padding: 18px; border-radius: 12px; text-align: left;
         }
-        .feature-card h3 { margin: 0 0 12px 0; color: var(--neon-yellow); font-size: 1.05rem; border-bottom: 1px solid #3a465d; padding-bottom: 5px;}
-        .feature-card p { margin: 0 0 8px 0; font-size: 0.8rem; color: #cbd5e0; line-height: 1.5; }
-        .feature-card .warn { color: var(--f1-red); font-weight: bold; font-size: 0.75rem; background: rgba(255,59,48,0.1); padding: 4px; border-radius: 4px; display: inline-block; margin-top: 5px; }
+        .feature-card h3 { margin: 0 0 10px 0; color: var(--neon-yellow); font-size: 1rem; border-bottom: 1px solid #3a465d; padding-bottom: 5px;}
+        .feature-card p { margin: 0 0 6px 0; font-size: 0.75rem; color: #cbd5e0; line-height: 1.4; }
+        .feature-card .warn { color: var(--f1-red); font-weight: bold; font-size: 0.7rem; background: rgba(255,59,48,0.1); padding: 3px; border-radius: 4px; display: inline-block; margin-top: 5px; }
+        .feature-card .license-text { font-family: monospace; font-size: 11px; color: #718096; }
 
         .btn-launch {
             background: var(--f1-red); color: white; border: none;
             padding: 15px 40px; font-size: 1.1rem; font-weight: 900; border-radius: 8px;
-            cursor: pointer; margin-top: 35px; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; margin-top: 25px; text-transform: uppercase; letter-spacing: 2px;
             box-shadow: 0 8px 20px rgba(255, 59, 48, 0.3); transition: all 0.2s;
         }
         .btn-launch:hover { background: #ff453a; transform: translateY(-2px); }
@@ -92,7 +101,6 @@
         .header-strip {
             grid-column: 1 / span 2; background: var(--panel-bg); border: 1px solid #2d3748;
             border-radius: 10px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
-            position: relative;
         }
         .header-strip h1 { margin: 0; font-size: 1.2rem; font-style: italic; font-weight: 900; color: var(--f1-red); }
         .config-box { display: flex; gap: 12px; align-items: center; }
@@ -158,6 +166,8 @@
 </head>
 <body>
 
+    <div class="version-tag">v0.0.3-beta</div>
+
     <select id="langSelect" class="lang-selector">
         <option value="en">English</option>
         <option value="zh">繁體中文</option>
@@ -169,28 +179,32 @@
         
         <div class="features-grid">
             <div class="feature-card">
-                <h3 data-i18n="rule1Title">1. Set Stint Parameters (Crucial)</h3>
-                <p data-i18n="rule1L1">• <b>Circuit:</b> Choose the vector track layout.</p>
-                <p data-i18n="rule1L2">• <b>Audio:</b> Select rain, nature, or silent mode.</p>
-                <p class="warn" data-i18n="rule1Warn">⚠️ WARNING: FOCUS, REST, and LAPS must be integers. Decimals will crash the telemetry engine!</p>
+                <h3 data-i18n="rule1Title">1. Set Parameters</h3>
+                <p data-i18n="rule1L1">• <b>Circuit:</b> Choose vector track layout.</p>
+                <p data-i18n="rule1L2">• <b>Audio:</b> Select rain, nature, or silent.</p>
+                <p class="warn" data-i18n="rule1Warn">⚠️ WARNING: Time and Laps must be INTEGERS. No decimals!</p>
             </div>
             <div class="feature-card">
                 <h3 data-i18n="rule2Title">2. Select Driver</h3>
-                <p data-i18n="rule2L1">• <b>Roster:</b> Pick any driver from the 2026 grid.</p>
-                <p data-i18n="rule2L2">• <b>Telemetry Sync:</b> Track car color and 3-letter code will update automatically.</p>
+                <p data-i18n="rule2L1">• <b>Roster:</b> Pick any driver from the grid.</p>
+                <p data-i18n="rule2L2">• <b>Sync:</b> UI and Car colors update automatically.</p>
             </div>
             <div class="feature-card">
-                <h3 data-i18n="rule3Title">3. Lights Out & Focus Lock</h3>
-                <p data-i18n="rule3L1">• <b>Start:</b> Press START for team radio check and audio activation.</p>
-                <p data-i18n="rule3L2">• <b>Auto-Loop:</b> System auto-switches modes. UI is locked to prevent distractions.</p>
+                <h3 data-i18n="rule3Title">3. Lights Out</h3>
+                <p data-i18n="rule3L1">• <b>Start:</b> Voice radio check on activation.</p>
+                <p data-i18n="rule3L2">• <b>Lock:</b> UI prevents distractions during stint.</p>
+            </div>
+            <div class="feature-card">
+                <h3 data-i18n="rule4Title">⚖️ License & Declaration</h3>
+                <p data-i18n="rule4L1">Copyright (c) 2026 raylai8888. MIT License.</p>
+                <p class="license-text" data-i18n="rule4L2">Free for non-commercial use. Not affiliated with F1.</p>
             </div>
         </div>
 
-        <button class="btn-launch" id="launchBtn" data-i18n="btnLaunch">I've read the rules. Launch Paddock</button>
+        <button class="btn-launch" id="launchBtn" data-i18n="btnLaunch">Launch Paddock</button>
     </div>
 
     <div id="telemetry-dashboard">
-        
         <div id="configLock" class="lock-overlay" style="grid-column: 1/span 2; grid-row: 1; width:100%; height:100%; border-radius:10px;"></div>
         <div id="paddockLock" class="lock-overlay" style="grid-column: 1; grid-row: 2; width:100%; height:100%; border-radius:10px;"></div>
 
@@ -206,19 +220,19 @@
                     </select>
                 </div>
                 <div>
-                    <label data-i18n="lblAudio">AUDIO FOCUS</label>
+                    <label data-i18n="lblAudio">AUDIO</label>
                     <select id="audioSelect">
-                        <option value="rain" data-i18n="optRain">White Noise (Rain)</option>
-                        <option value="birds" data-i18n="optBirds">Nature (Birds)</option>
-                        <option value="none" data-i18n="optNone">None (Silent)</option>
+                        <option value="rain" data-i18n="optRain">Rain Noise</option>
+                        <option value="birds" data-i18n="optBirds">Nature Birds</option>
+                        <option value="none" data-i18n="optNone">Silent</option>
                     </select>
                 </div>
                 <div>
-                    <label data-i18n="lblFocus">FOCUS MINS (Int)</label>
+                    <label data-i18n="lblFocus">FOCUS (Int)</label>
                     <input type="number" id="durationInput" value="25" min="1" max="120" step="1" style="width: 45px;">
                 </div>
                 <div>
-                    <label data-i18n="lblRest">REST MINS (Int)</label>
+                    <label data-i18n="lblRest">REST (Int)</label>
                     <input type="number" id="restDurationInput" value="5" min="1" max="30" step="1" style="width: 45px;">
                 </div>
                 <div>
@@ -231,45 +245,41 @@
         <div class="paddock-wall" id="paddockWall"></div>
 
         <div class="main-telemetry">
-            
             <div class="focus-timer-panel">
                 <div class="timer-label" id="timerLabel" data-i18n="lblStandby">GARAGE STANDBY</div>
                 <div class="big-timer" id="timerBox">25:00</div>
                 <div class="action-bar">
                     <button class="btn btn-go" id="startBtn" data-i18n="btnStart">START SYSTEM</button>
-                    <button class="btn btn-abort" id="abortBtn" disabled data-i18n="btnAbort">RETIRE / ABORT</button>
+                    <button class="btn btn-abort" id="abortBtn" disabled data-i18n="btnAbort">RETIRE</button>
                 </div>
             </div>
 
             <div class="bottom-split">
                 <div class="data-grid">
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblState">Current State</div>
+                        <div class="data-label" data-i18n="lblState">State</div>
                         <div class="data-val" id="dataStatus" style="color:var(--neon-blue);" data-i18n="stateReady">READY</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblCurLap">Current Lap</div>
+                        <div class="data-label" data-i18n="lblCurLap">Lap</div>
                         <div class="data-val" id="dataLaps">Lap 1 / 2</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblTotFocus">Total Focus Time</div>
+                        <div class="data-label" data-i18n="lblTotFocus">Focus Time</div>
                         <div class="data-val" id="dataFocusTime">00:00</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblTotRest">Total Rest Time</div>
+                        <div class="data-label" data-i18n="lblTotRest">Rest Time</div>
                         <div class="data-val" id="dataRestTime">00:00</div>
                     </div>
                 </div>
-
                 <div class="map-box">
                     <svg viewBox="0 0 500 400">
                         <path id="bahrainPath" d="M 90,80 L 400,80 C 420,80 430,100 420,110 L 330,200 C 310,220 340,250 360,270 L 410,320 C 420,330 400,350 380,340 L 100,340 C 80,340 70,320 80,300 L 140,200 L 90,100 Z" style="display:none;"/>
                         <path id="suzukaPath" d="M 120,300 C 70,220 120,130 180,160 C 230,180 260,250 320,240 C 380,230 430,150 400,100 C 360,50 280,100 240,150 C 200,200 160,380 120,300 Z" style="display:none;"/>
                         <path id="monacoPath" d="M 140,290 C 100,290 60,260 60,200 C 60,130 110,100 160,90 C 230,75 300,60 380,80 C 420,90 440,120 420,160 C 390,200 360,180 340,210 C 310,250 360,290 320,320 C 270,350 250,260 210,260 C 170,260 170,290 140,290 Z" style="display:none;"/>
-                        
                         <path id="trackBg" class="track-line" d="" />
                         <path id="trackProg" class="track-active" d="" />
-
                         <g id="carNode">
                             <circle class="car-circle" r="9" id="carCircle"/>
                             <text class="car-text" dx="14" dy="5" id="carText">VER</text>
@@ -277,134 +287,69 @@
                     </svg>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // === 雙語系字典 (i18n) ===
         const i18n = {
             en: {
-                introTitle: "LAP TIME FOCUS <span>PRO</span>",
-                introSub: "System Operations & Guidelines",
-                rule1Title: "1. Set Stint Parameters (Crucial)",
-                rule1L1: "• <b>Circuit:</b> Choose the vector track layout.",
-                rule1L2: "• <b>Audio:</b> Select rain, nature, or silent mode.",
-                rule1Warn: "⚠️ WARNING: FOCUS, REST, and LAPS must be integers. Decimals will crash the telemetry engine!",
-                rule2Title: "2. Select Driver",
-                rule2L1: "• <b>Roster:</b> Pick any driver from the 2026 grid.",
-                rule2L2: "• <b>Telemetry Sync:</b> Track car color and 3-letter code will update automatically.",
-                rule3Title: "3. Lights Out & Focus Lock",
-                rule3L1: "• <b>Start:</b> Press START for team radio check and audio activation.",
-                rule3L2: "• <b>Auto-Loop:</b> System auto-switches modes. UI is locked to prevent distractions.",
-                btnLaunch: "I've read the rules. Launch Paddock",
-                dbTitle: "F1 STUDY LOOP SYSTEM",
-                lblCircuit: "CIRCUIT",
-                lblAudio: "AUDIO FOCUS",
-                lblFocus: "FOCUS MINS (Int)",
-                lblRest: "REST MINS (Int)",
-                lblLaps: "LAPS (Int)",
-                optBahrain: "Bahrain GP",
-                optSuzuka: "Suzuka Circuit",
-                optMonaco: "Circuit de Monaco",
-                optRain: "White Noise (Rain)",
-                optBirds: "Nature (Birds)",
-                optNone: "None (Silent)",
-                btnStart: "START SYSTEM",
-                btnAbort: "RETIRE / ABORT",
-                lblState: "Current State",
-                lblCurLap: "Current Lap",
-                lblTotFocus: "Total Focus Time",
-                lblTotRest: "Total Rest Time",
-                stateReady: "READY",
-                stateFocus: "ON TRACK (FOCUS)",
-                stateRest: "PIT BOX (RESTING)",
-                lblStandby: "GARAGE STANDBY",
-                lblTimerFocus: "LAP {lap} - FULL FOCUS",
-                lblTimerRest: "LAP {lap} - PIT STOP RECOVERY",
+                introTitle: "LAP TIME FOCUS <span>PRO</span>", introSub: "System Operations & Guidelines",
+                rule1Title: "1. Set Parameters", rule1L1: "• Circuit: Choose vector track layout.", rule1L2: "• Audio: Select rain, nature, or silent.", rule1Warn: "⚠️ WARNING: FOCUS, REST and LAPS must be INTEGERS!",
+                rule2Title: "2. Select Driver", rule2L1: "• Roster: Pick any driver from the grid.", rule2L2: "• Sync: UI and Car colors update automatically.",
+                rule3Title: "3. Lights Out", rule3L1: "• Start: Voice radio check on activation.", rule3L2: "• Lock: UI prevents distractions during stint.",
+                rule4Title: "⚖️ License & Rules", rule4L1: "Copyright (c) 2026 raylai8888. MIT License.", rule4L2: "Free for non-commercial use. Not affiliated with F1.",
+                btnLaunch: "Launch Paddock", dbTitle: "F1 STUDY LOOP SYSTEM",
+                lblCircuit: "CIRCUIT", lblAudio: "AUDIO", lblFocus: "FOCUS (Int)", lblRest: "REST (Int)", lblLaps: "LAPS (Int)",
+                optBahrain: "Bahrain GP", optSuzuka: "Suzuka Circuit", optMonaco: "Monaco GP",
+                optRain: "Rain Noise", optBirds: "Nature Birds", optNone: "Silent",
+                btnStart: "START SYSTEM", btnAbort: "RETIRE / ABORT",
+                lblState: "Current State", lblCurLap: "Current Lap", lblTotFocus: "Total Focus Time", lblTotRest: "Total Rest Time",
+                stateReady: "READY", stateFocus: "ON TRACK (FOCUS)", stateRest: "PIT BOX (RESTING)",
+                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - FULL FOCUS", lblTimerRest: "LAP {lap} - PIT STOP RECOVERY",
                 spkStartLap1: "Lights out! Focus session active. Good luck.",
                 spkStartLapN: "Pit stop complete. Entering lap {lap}. Focus session active.",
                 spkRest: "Focus stint complete. Box box box. Time to rest.",
                 spkAbort: "Driver retired. Training session aborted.",
                 spkFinish: "Chequered flag! All laps completed. What a drive!",
-                alertTitleF: "FINISHED / PERFECT QUALI",
-                alertTitleA: "RETIRED / DNF",
-                alertSum: "🏁 OFFICIAL TELEMETRY SUMMARY 🏁\n-----------------------------\nFinal Status: {status}\nDriver: {driver}\n\n📊 SESSION STATS:\n• Total Laps: {laps}\n• Total Focus: {focus} mins\n• Total Rest: {rest} mins\n\nKeep pushing for human progress!"
+                // 修正點：將結尾改為 Congratulations on completing your focus session!
+                alertSum: "🏁 TELEMETRY SUMMARY 🏁\n-----------------------------\nStatus: {status}\nDriver: {driver}\n\n📊 STATS:\n• Laps: {laps}\n• Focus: {focus} mins\n• Rest: {rest} mins\n\nCongratulations on completing your focus session!"
             },
             zh: {
-                introTitle: "LAP TIME FOCUS <span>PRO</span>",
-                introSub: "系統操作手冊與使用規範",
-                rule1Title: "1. 設定Stint參數（最重要）",
-                rule1L1: "• <b>選擇賽道：</b>決定本次出車的向量地圖線條路徑。",
-                rule1L2: "• <b>選擇背景音：</b>可選高質感雨聲、蟲鳴鳥叫聲或無聲靜音。",
-                rule1Warn: "⚠️ 警告：FOCUS、REST時間與LAPS圈數，請務必填寫「正整數」，嚴禁輸入小數點，否則後台遙測時脈會當機！",
-                rule2Title: "2. 選定出賽車手",
-                rule2L1: "• <b>點擊名單：</b>在左側圍場牆中，自由點選 2026 網格中的任一車手。",
-                rule2L2: "• <b>車隊色連動：</b>系統會即時更換賽道上車子的代表顏色與三字代碼。",
-                rule3Title: "3. 燈滅起跑與防分心鎖定",
-                rule3L1: "• <b>啟動系統：</b>按 START 後，語音會廣播提示，白噪音自動開啟。",
-                rule3L2: "• <b>全自動循環：</b>時間到會自動轉成休息並關閉音樂。左側及上方選單會完全遮罩鎖定，強迫維持高專注度。",
-                btnLaunch: "我已閱讀規範。進入圍場 Launch",
-                dbTitle: "F1 STUDY LOOP SYSTEM",
-                lblCircuit: "CIRCUIT / 賽道",
-                lblAudio: "AUDIO / 背景音效",
-                lblFocus: "FOCUS MINS / 專注(整數)",
-                lblRest: "REST MINS / 休息(整數)",
-                lblLaps: "LAPS / 迴圈(整數)",
-                optBahrain: "Bahrain GP (巴林)",
-                optSuzuka: "Suzuka Circuit (日本鈴鹿)",
-                optMonaco: "Circuit de Monaco (摩納哥)",
-                optRain: "White Noise / 舒適雨聲",
-                optBirds: "Nature / 蟲鳴鳥叫",
-                optNone: "None / 保持安靜",
-                btnStart: "START SYSTEM",
-                btnAbort: "RETIRE / 中途退賽",
-                lblState: "Current State / 狀態",
-                lblCurLap: "Current Lap / 圈數",
-                lblTotFocus: "Total Focus Time",
-                lblTotRest: "Total Rest Time",
-                stateReady: "READY",
-                stateFocus: "ON TRACK (專注)",
-                stateRest: "PIT BOX (休息)",
-                lblStandby: "GARAGE STANDBY",
-                lblTimerFocus: "LAP {lap} - 全力專注中",
-                lblTimerRest: "LAP {lap} - 維修站休息中",
+                introTitle: "LAP TIME FOCUS <span>PRO</span>", introSub: "系統操作手冊與使用規範",
+                rule1Title: "1. 設定參數", rule1L1: "• 選擇賽道：決定向量地圖路徑。", rule1L2: "• 選擇背景音：雨聲、鳥叫或靜音。", rule1Warn: "⚠️ 警告：時間與圈數請務必輸入「整數」！",
+                rule2Title: "2. 選定車手", rule2L1: "• 名單：自由點選 2026 網格車手。", rule2L2: "• 連動：車隊色與代碼會自動同步。",
+                rule3Title: "3. 燈滅起跑", rule3L1: "• 啟動：START 後語音廣播與音效開啟。", rule3L2: "• 鎖定：介面自動遮罩鎖定防止偷懶。",
+                rule4Title: "⚖️ 版權與聲明", rule4L1: "Copyright (c) 2026 raylai8888. MIT 授權條款。", rule4L2: "免費供教育及非商業用途使用。本專案與 Formula 1 官方無關。",
+                btnLaunch: "我已閱讀規範。進入圍場 Launch", dbTitle: "F1 STUDY LOOP SYSTEM",
+                lblCircuit: "CIRCUIT / 賽道", lblAudio: "AUDIO / 音效", lblFocus: "FOCUS / 專注(整數)", lblRest: "REST / 休息(整數)", lblLaps: "LAPS / 圈數(整數)",
+                optBahrain: "Bahrain GP (巴林)", optSuzuka: "Suzuka (鈴鹿)", optMonaco: "Monaco (摩納哥)",
+                optRain: "White Noise / 雨聲", optBirds: "Nature / 蟲鳴鳥叫", optNone: "None / 靜音",
+                btnStart: "START SYSTEM", btnAbort: "RETIRE / 中途退賽",
+                lblState: "當前狀態", lblCurLap: "當前圈數", lblTotFocus: "累積專注", lblTotRest: "累積休息",
+                stateReady: "READY", stateFocus: "ON TRACK (專注)", stateRest: "PIT BOX (休息)",
+                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - 全力專注中", lblTimerRest: "LAP {lap} - 維修站休息中",
                 spkStartLap1: "五燈熄滅，排位賽正式開始！請全力專注。",
                 spkStartLapN: "維修結束，順利出站。進入第 {lap} 圈，專注開始。",
                 spkRest: "專注圈完成。Box Box Box！請進站閉眼休息。",
-                spkAbort: "車手退賽，本次專注訓練終止。",
+                spkAbort: "車手退賽，本次訓練終止。",
                 spkFinish: "方格旗揮舞！全數完賽，這是一場完美的專注排位賽！",
-                alertTitleF: "FINISHED / 完美完賽",
-                alertTitleA: "RETIRED / 中途退賽",
-                alertSum: "🏁 官方排位賽數據總結報告 🏁\n-----------------------------\n最終結果: {status}\n出場車手: {driver}\n\n📊 遙測統計明細：\n• 總共完成圈數: {laps} 圈\n• 累積專注時間: {focus} 分鐘\n• 累積休息時間: {rest} 分鐘\n\n為了人類的進步與知識，繼續保持這個偉大的節奏！"
+                // 修正點：將結尾改為 恭喜完成專注！
+                alertSum: "🏁 官方數據總結報告 🏁\n-----------------------------\n結果: {status}\n車手: {driver}\n\n📊 遙測統計：\n• 圈數: {laps} 圈\n• 專注: {focus} 分鐘\n• 休息: {rest} 分鐘\n\n恭喜完成專注！"
             }
         };
 
         let currentLang = 'en';
-
-        function updateLanguage() {
-            currentLang = document.getElementById('langSelect').value;
-            const dict = i18n[currentLang];
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (dict[key]) { el.innerHTML = dict[key]; }
-            });
-            syncUI(); // 確保動態文字同步更新
-        }
-        document.getElementById('langSelect').addEventListener('change', updateLanguage);
-
-        // 2026年 完整 10 支車隊 20 位車手陣容
         const fullGrid = [
-            { team: "Red Bull Racing", color: "#0C1F45", drivers: [{n:"Max Verstappen", c:"VER"}, {n:"Liam Lawson", c:"LAW"}] },
+            { team: "Red Bull", color: "#0C1F45", drivers: [{n:"Max Verstappen", c:"VER"}, {n:"Liam Lawson", c:"LAW"}] },
             { team: "Ferrari", color: "#DC0000", drivers: [{n:"Lewis Hamilton", c:"HAM"}, {n:"Charles Leclerc", c:"LEC"}] },
             { team: "McLaren", color: "#FF8700", drivers: [{n:"Lando Norris", c:"NOR"}, {n:"Oscar Piastri", c:"PIA"}] },
             { team: "Mercedes", color: "#00A19B", drivers: [{n:"George Russell", c:"RUS"}, {n:"Kimi Antonelli", c:"ANT"}] },
             { team: "Aston Martin", color: "#006F62", drivers: [{n:"Fernando Alonso", c:"ALO"}, {n:"Lance Stroll", c:"STR"}] },
-            { team: "Audi F1 Team", color: "#EE122B", drivers: [{n:"Nico Hulkenberg", c:"HUL"}, {n:"Gabriel Bortoleto", c:"BOR"}] },
-            { team: "Williams Racing", color: "#005BA6", drivers: [{n:"Carlos Sainz", c:"SAI"}, {n:"Alex Albon", c:"ALB"}] },
-            { team: "Cadillac F1", color: "#DDDDDD", drivers: [{n:"Sergio Perez", c:"PER"}, {n:"Valtteri Bottas", c:"BOT"}] },
+            { team: "Audi F1", color: "#EE122B", drivers: [{n:"Nico Hulkenberg", c:"HUL"}, {n:"Gabriel Bortoleto", c:"BOR"}] },
+            { team: "Williams", color: "#005BA6", drivers: [{n:"Carlos Sainz", c:"SAI"}, {n:"Alex Albon", c:"ALB"}] },
+            { team: "Cadillac", color: "#DDDDDD", drivers: [{n:"Sergio Perez", c:"PER"}, {n:"Valtteri Bottas", c:"BOT"}] },
             { team: "Racing Bulls", color: "#6692ff", drivers: [{n:"Franco Colapinto", c:"COL"}, {n:"Arvid Lindblad", c:"LIN"}] },
-            { team: "Haas F1 Team", color: "#787878", drivers: [{n:"Oliver Bearman", c:"BEA"}, {n:"Esteban Ocon", c:"OCO"}] }
+            { team: "Haas", color: "#787878", drivers: [{n:"Oliver Bearman", c:"BEA"}, {n:"Esteban Ocon", c:"OCO"}] }
         ];
 
         let activeDriver = fullGrid[0].drivers[0]; let activeTeam = fullGrid[0];
@@ -413,6 +358,7 @@
         let statsFocusMs = 0; let statsRestMs = 0; let totalPitsCount = 0; let pathLength = 0;
         let audioCtx = null; let whiteNoiseNode = null;
 
+        const langSelect = document.getElementById('langSelect');
         const introPage = document.getElementById('intro-page');
         const telemetryDashboard = document.getElementById('telemetry-dashboard');
         const launchBtn = document.getElementById('launchBtn');
@@ -438,33 +384,34 @@
         const configLock = document.getElementById('configLock');
         const paddockLock = document.getElementById('paddockLock');
 
+        function updateLanguage() {
+            currentLang = langSelect.value;
+            const dict = i18n[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) { el.innerHTML = dict[key]; }
+            });
+            syncUI(); 
+        }
+        langSelect.addEventListener('change', updateLanguage);
+
         launchBtn.addEventListener('click', () => {
             introPage.style.display = 'none';
             telemetryDashboard.style.display = 'grid';
-            document.getElementById('langSelect').style.display = 'none';
+            langSelect.style.display = 'none'; 
             loadTrack(); syncUI();
         });
 
-        // 🔊 多語系語音合成引擎 (支援第一圈與後續圈的不同台詞)
-        function speakTeamRadio(type, var1 = "") {
+        function speakTeamRadio(type, val = "") {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                let txt = "";
+                let txt = i18n[currentLang][type] || "";
+                if (type === 'spkStartLap1') txt = i18n[currentLang].spkStartLap1;
+                else if (type === 'spkStartLapN') txt = i18n[currentLang].spkStartLapN.replace('{lap}', val);
                 
-                if (type === 'start') {
-                    if (var1 === 1) {
-                        txt = i18n[currentLang].spkStartLap1;
-                    } else {
-                        txt = i18n[currentLang].spkStartLapN.replace('{lap}', var1);
-                    }
-                } else {
-                    txt = i18n[currentLang][type];
-                }
-
                 const utterance = new SpeechSynthesisUtterance(txt);
                 utterance.lang = currentLang === 'en' ? 'en-GB' : 'zh-TW';
-                utterance.rate = 1.0; 
-                window.speechSynthesis.speak(utterance);
+                utterance.rate = 1.0; window.speechSynthesis.speak(utterance);
             }
         }
 
@@ -473,11 +420,9 @@
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 if (whiteNoiseNode) return;
-
                 const bufferSize = 3 * audioCtx.sampleRate;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
-
                 if (type === 'rain') {
                     let b0, b1, b2, b3, b4, b5, b6; b0=b1=b2=b3=b4=b5=b6=0.0;
                     for (let i = 0; i < bufferSize; i++) {
@@ -495,31 +440,17 @@
                         data[i] = osc * (env > 0.8 ? 0.012 : 0) + (Math.random() * 2 - 1) * 0.004;
                     }
                 }
-
                 whiteNoiseNode = audioCtx.createBufferSource();
                 whiteNoiseNode.buffer = buffer; whiteNoiseNode.loop = true;
-
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'lowpass'; filter.frequency.setValueAtTime(type === 'rain' ? 1200 : 2500, audioCtx.currentTime);
-
+                const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(type === 'rain' ? 1200 : 2500, audioCtx.currentTime);
                 whiteNoiseNode.connect(filter); filter.connect(audioCtx.destination);
                 whiteNoiseNode.start(0);
-            } catch (e) { console.warn("Audio Context init failed."); }
+            } catch (e) { console.warn("Audio Context error"); }
         }
 
         function stopAudioGenerator() {
-            if (whiteNoiseNode) {
-                try { whiteNoiseNode.stop(); } catch(e){}
-                whiteNoiseNode.disconnect(); whiteNoiseNode = null;
-            }
-        }
-
-        function triggerFocusAudio() {
-            stopAudioGenerator();
-            const choice = audioSelect.value;
-            if (choice === 'rain' || choice === 'birds') {
-                startAudioGenerator(choice);
-            }
+            if (whiteNoiseNode) { try { whiteNoiseNode.stop(); } catch(e){} whiteNoiseNode.disconnect(); whiteNoiseNode = null; }
         }
 
         fullGrid.forEach(t => {
@@ -538,30 +469,26 @@
             paddock.appendChild(sec);
         });
 
-        function formatTime(ms) {
-            let totalSecs = Math.ceil(ms / 1000);
-            let m = String(Math.floor(totalSecs / 60)).padStart(2, '0');
-            let s = String(totalSecs % 60).padStart(2, '0');
-            return `${m}:${s}`;
+        function fmt(ms) {
+            let s = Math.ceil(ms / 1000); let m = String(Math.floor(s / 60)).padStart(2, '0');
+            s = String(s % 60).padStart(2, '0'); return `${m}:${s}`;
         }
 
         function syncUI() {
             carText.textContent = activeDriver.c; carCircle.style.fill = activeTeam.color; 
-            
             durationInput.value = Math.floor(durationInput.value);
             restDurationInput.value = Math.floor(restDurationInput.value);
             loopInput.value = Math.floor(loopInput.value);
-
             dataLaps.textContent = `Lap ${currentLap} / ${loopInput.value}`;
-            
             if(!isSystemRunning) {
                 timerBox.textContent = `${String(durationInput.value).padStart(2,'0')}:00`;
-                timerLabel.innerHTML = i18n[currentLang].lblStandby; 
-                timerBox.style.color = "var(--neon-yellow)";
+                timerLabel.innerHTML = i18n[currentLang].lblStandby;
             } else {
                 if(currentMode === "FOCUS") {
+                    dataStatus.innerHTML = i18n[currentLang].stateFocus;
                     timerLabel.innerHTML = i18n[currentLang].lblTimerFocus.replace('{lap}', currentLap);
                 } else {
+                    dataStatus.innerHTML = i18n[currentLang].stateRest;
                     timerLabel.innerHTML = i18n[currentLang].lblTimerRest.replace('{lap}', currentLap);
                 }
             }
@@ -580,21 +507,17 @@
         function loopEngine(timestamp) {
             if (!lastTimestamp) lastTimestamp = timestamp;
             let delta = timestamp - lastTimestamp; lastTimestamp = timestamp;
-
             modeTimeLeft = Math.max(0, modeTimeLeft - delta);
-            timerBox.textContent = formatTime(modeTimeLeft);
-
+            timerBox.textContent = fmt(modeTimeLeft);
             if (currentMode === "FOCUS") {
-                statsFocusMs += delta; dataFocusTime.textContent = formatTime(statsFocusMs);
+                statsFocusMs += delta; dataFocusTime.textContent = fmt(statsFocusMs);
                 let ratio = 1 - (modeTimeLeft / totalModeDuration);
                 trackProg.style.strokeDashoffset = pathLength - (pathLength * ratio);
                 const pt = trackProg.getPointAtLength(pathLength * ratio);
                 carNode.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
-
                 if (modeTimeLeft <= 0) switchToRestMode();
             } else if (currentMode === "REST") {
-                statsRestMs += delta; dataRestTime.textContent = formatTime(statsRestMs);
-
+                statsRestMs += delta; dataRestTime.textContent = fmt(statsRestMs);
                 if (modeTimeLeft <= 0) {
                     currentLap++;
                     if (currentLap <= totalTargetLaps) switchToFocusMode();
@@ -607,87 +530,65 @@
         function switchToFocusMode() {
             currentMode = "FOCUS";
             totalModeDuration = parseInt(durationInput.value) * 60 * 1000; modeTimeLeft = totalModeDuration;
-            
-            dataStatus.innerHTML = i18n[currentLang].stateFocus; dataStatus.style.color = "var(--neon-green)";
             timerBox.style.color = "var(--neon-yellow)";
-            syncUI();
-            
-            loadTrack(); triggerFocusAudio(); 
-            speakTeamRadio('start', currentLap);
+            syncUI(); loadTrack(); 
+            const audioVal = audioSelect.value;
+            if(audioVal !== 'none') startAudioGenerator(audioSelect.value);
+            speakTeamRadio(currentLap === 1 ? 'spkStartLap1' : 'spkStartLapN', currentLap);
         }
 
         function switchToRestMode() {
-            stopAudioGenerator(); 
-            currentMode = "REST";
+            stopAudioGenerator(); currentMode = "REST";
             totalModeDuration = parseInt(restDurationInput.value) * 60 * 1000; modeTimeLeft = totalModeDuration;
-            totalPitsCount++;
-            
-            dataStatus.innerHTML = i18n[currentLang].stateRest; dataStatus.style.color = "var(--neon-blue)";
-            timerBox.style.color = "var(--neon-blue)";
-            syncUI();
-            
-            speakTeamRadio('spkRest');
+            totalPitsCount++; timerBox.style.color = "var(--neon-blue)";
+            syncUI(); speakTeamRadio('spkRest');
         }
 
         startBtn.addEventListener('click', () => {
             if (!isSystemRunning) {
                 isSystemRunning = true; currentLap = 1;
                 totalTargetLaps = parseInt(loopInput.value); lastTimestamp = 0;
-                
                 startBtn.style.display = 'none'; abortBtn.disabled = false;
                 configLock.style.display = 'block'; paddockLock.style.display = 'block';
-                
-                switchToFocusMode();
-                animationId = requestAnimationFrame(loopEngine);
+                switchToFocusMode(); animationId = requestAnimationFrame(loopEngine);
             }
         });
 
         abortBtn.addEventListener('click', () => {
             stopAudioGenerator(); cancelAnimationFrame(animationId);
             speakTeamRadio('spkAbort');
-            setTimeout(() => { showSummaryReport(i18n[currentLang].alertTitleA); resetSystem(); }, 50);
+            setTimeout(() => { 
+                const sum = i18n[currentLang].alertSum.replace('{status}', currentLang === 'en' ? 'RETIRED' : '退賽')
+                    .replace('{driver}', activeDriver.n).replace('{laps}', totalPitsCount)
+                    .replace('{focus}', (statsFocusMs/60000).toFixed(1)).replace('{rest}', (statsRestMs/60000).toFixed(1));
+                alert(sum); resetSystem(); 
+            }, 50);
         });
 
         function completeAllLoops() {
             stopAudioGenerator(); cancelAnimationFrame(animationId);
             speakTeamRadio('spkFinish');
-            setTimeout(() => { showSummaryReport(i18n[currentLang].alertTitleF); resetSystem(); }, 50);
-        }
-
-        function showSummaryReport(finalStatus) {
-            let focusMins = (statsFocusMs / 60000).toFixed(1);
-            let restMins = (statsRestMs / 60000).toFixed(1);
-            
-            let txt = i18n[currentLang].alertSum
-                .replace('{status}', finalStatus)
-                .replace('{driver}', `${activeDriver.n} (${activeDriver.c})`)
-                .replace('{laps}', totalPitsCount)
-                .replace('{focus}', focusMins)
-                .replace('{rest}', restMins);
-
-            alert(txt);
+            setTimeout(() => { 
+                const sum = i18n[currentLang].alertSum.replace('{status}', currentLang === 'en' ? 'FINISHED' : '完賽')
+                    .replace('{driver}', activeDriver.n).replace('{laps}', totalPitsCount)
+                    .replace('{focus}', (statsFocusMs/60000).toFixed(1)).replace('{rest}', (statsRestMs/60000).toFixed(1));
+                alert(sum); resetSystem(); 
+            }, 50);
         }
 
         function resetSystem() {
             isSystemRunning = false; statsFocusMs = 0; statsRestMs = 0; totalPitsCount = 0; lastTimestamp = 0;
-            currentLap = 1;
-            stopAudioGenerator(); startBtn.style.display = 'block'; abortBtn.disabled = true;
-            dataStatus.innerHTML = i18n[currentLang].stateReady; dataStatus.style.color = "var(--neon-blue)";
+            currentLap = 1; stopAudioGenerator(); startBtn.style.display = 'block'; abortBtn.disabled = true;
             configLock.style.display = 'none'; paddockLock.style.display = 'none';
-            document.getElementById('langSelect').style.display = 'block'; 
-            loadTrack(); syncUI();
+            langSelect.style.display = 'block'; updateLanguage(); 
+            loadTrack();
         }
 
         trackSelect.addEventListener('change', loadTrack);
         durationInput.addEventListener('input', syncUI);
         restDurationInput.addEventListener('input', syncUI);
         loopInput.addEventListener('input', syncUI);
-        
-        window.onload = () => { 
-            updateLanguage(); 
-            loadTrack(); 
-            syncUI(); 
-        };
+        window.onload = () => { updateLanguage(); loadTrack(); syncUI(); };
     </script>
 </body>
 </html>
