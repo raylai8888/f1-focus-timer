@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Study Telemetry - Ultimate Focus Loop v0.0.4</title>
+    <title>F1 Study Telemetry - Ultimate Focus Loop v0.0.6</title>
     <style>
         :root {
             --bg-main: #141923;
@@ -37,9 +37,9 @@
             z-index: 100; pointer-events: none;
         }
 
-        /* 修正點：將語言切換選單置於全域最高層級，確保第二個頁面與鎖定狀態下依然完好顯示 */
+        /* 語言切換選單：賦予最高層級，並使用固定定位確保永遠出現在畫面最右上角 */
         .lang-selector {
-            position: absolute; top: 20px; right: 20px; z-index: 999;
+            position: fixed; top: 20px; right: 20px; z-index: 99999;
             background: var(--panel-inner); border: 1px solid #4a5568; color: #fff;
             padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 0.85rem;
             cursor: pointer; outline: none;
@@ -103,7 +103,7 @@
             border-radius: 10px; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
         }
         .header-strip h1 { margin: 0; font-size: 1.2rem; font-style: italic; font-weight: 900; color: var(--f1-red); }
-        .config-box { display: flex; gap: 12px; align-items: center; padding-right: 140px; } /* 預留右側空間給翻譯按鈕 */
+        .config-box { display: flex; gap: 12px; align-items: center; padding-right: 140px; }
         label { font-size: 0.7rem; color: var(--text-dark); font-weight: bold; }
         select, input {
             background: var(--panel-inner); border: 1px solid #4a5568; color: #fff;
@@ -166,12 +166,7 @@
 </head>
 <body>
 
-    <div class="version-tag">v0.0.4-beta</div>
-
-    <select id="langSelect" class="lang-selector">
-        <option value="en">English</option>
-        <option value="zh">繁體中文</option>
-    </select>
+    <div class="version-tag">v0.0.6-beta</div>
 
     <div id="intro-page">
         <h1 data-i18n="introTitle">LAP TIME FOCUS <span>PRO</span></h1>
@@ -197,7 +192,7 @@
             <div class="feature-card">
                 <h3 data-i18n="rule4Title">⚖️ License & Declaration</h3>
                 <p data-i18n="rule4L1">Copyright (c) 2026 raylai8888. All rights reserved.</p>
-                <p class="license-text" data-i18n="rule4L2">Free for non-commercial use only. Not affiliated with F1, FIA, or any Formula 1 teams.</p>
+                <p class="license-text" data-i18n="rule4L2">Free for non-commercial use only. Not affiliated with F1.</p>
             </div>
         </div>
 
@@ -289,6 +284,11 @@
         </div>
     </div>
 
+    <select id="langSelect" class="lang-selector">
+        <option value="en">English</option>
+        <option value="zh">繁體中文</option>
+    </select>
+
     <script>
         const i18n = {
             en: {
@@ -305,11 +305,11 @@
                 lblState: "Current State", lblCurLap: "Current Lap", lblTotFocus: "Total Focus Time", lblTotRest: "Total Rest Time",
                 stateReady: "READY", stateFocus: "ON TRACK (FOCUS)", stateRest: "PIT BOX (RESTING)",
                 lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - FULL FOCUS", lblTimerRest: "LAP {lap} - PIT STOP RECOVERY",
-                spkStartLap1: "Lights out! Focus session active. Good luck.",
-                spkStartLapN: "Pit stop complete. Entering lap {lap}. Focus session active.",
-                spkRest: "Focus stint complete. Box box box. Time to rest.",
-                spkAbort: "Driver retired. Training session aborted.",
-                spkFinish: "Chequered flag! All laps completed. What a drive!",
+                // 修正點：英文極簡廣播台詞
+                spkStart: "Start.",
+                spkRest: "Rest.",
+                spkAbort: "Abort.",
+                spkFinish: "Finish.",
                 alertSum: "🏁 TELEMETRY SUMMARY 🏁\n-----------------------------\nStatus: {status}\nDriver: {driver}\n\n📊 STATS:\n• Laps: {laps}\n• Focus: {focus} mins\n• Rest: {rest} mins\n\nCongratulations on completing your focus session!"
             },
             zh: {
@@ -317,8 +317,8 @@
                 rule1Title: "1. 設定參數", rule1L1: "• 選擇賽道：決定向量地圖路徑。", rule1L2: "• 選擇背景音：舒適雨聲或保持安靜。", rule1Warn: "⚠️ 警告：時間與圈數請務必輸入「整數」！",
                 rule2Title: "2. 選定車手", rule2L1: "• 名單：自由點選 2026 網格車手。", rule2L2: "• 連動：車隊色與代碼會自動同步。",
                 rule3Title: "3. 燈滅起跑", rule3L1: "• 啟動：START 後語音廣播與音效開啟。", rule3L2: "• 鎖定：介面自動遮罩鎖定防止偷懶。",
-                rule4Title: "⚖️ 版權與免責聲明", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有，翻印必究。", rule4L2: "本系統僅限非商業免費使用。本專案與 F1、FIA 或任何一級方程式車隊均無隸屬關係。",
-                btnLaunch: "我已閱讀規範。進入圍場 Launch", dbTitle: "F1 STUDY LOOP SYSTEM",
+                rule4Title: "⚖️ 版權與免責聲明", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有，翻印必究。", rule4L2: "本系統僅限非商業免費使用。本專案與 F1、FIA 或 any Formula 1 車隊均無隸屬關係。",
+                btnLaunch: "進入賽道 Launch", dbTitle: "F1 STUDY LOOP SYSTEM",
                 lblCircuit: "CIRCUIT / 賽道", lblAudio: "AUDIO / 音效", lblFocus: "FOCUS / 專注(整數)", lblRest: "REST / 休息(整數)", lblLaps: "LAPS / 圈數(整數)",
                 optBahrain: "Bahrain GP (巴林)", optSuzuka: "Suzuka (鈴鹿)", optMonaco: "Monaco (摩納哥)",
                 optRain: "White Noise / 雨聲", optNone: "None / 靜音",
@@ -326,11 +326,11 @@
                 lblState: "當前狀態", lblCurLap: "當前圈數", lblTotFocus: "累積專注", lblTotRest: "累積休息",
                 stateReady: "READY", stateFocus: "ON TRACK (專注)", stateRest: "PIT BOX (休息)",
                 lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - 全力專注中", lblTimerRest: "LAP {lap} - 維修站休息中",
-                spkStartLap1: "五燈熄滅，排位賽正式開始！請全力專注。",
-                spkStartLapN: "維修結束，順利出站。進入第 {lap} 圈，專注開始。",
-                spkRest: "專注圈完成。Box Box Box！請進站閉眼休息。",
-                spkAbort: "車手退賽，本次訓練終止。",
-                spkFinish: "方格旗揮舞！全數完賽，這是一場完美的專注排位賽！",
+                // 修正點：中文極簡廣播台詞
+                spkStart: "開始。",
+                spkRest: "休息。",
+                spkAbort: "退賽。",
+                spkFinish: "結束。",
                 alertSum: "🏁 官方數據總結報告 🏁\n-----------------------------\n結果: {status}\n車手: {driver}\n\n📊 遙測統計：\n• 圈數: {laps} 圈\n• 專注: {focus} 分鐘\n• 休息: {rest} 分鐘\n\n恭喜完成專注！"
             }
         };
@@ -395,16 +395,14 @@
         launchBtn.addEventListener('click', () => {
             introPage.style.display = 'none';
             telemetryDashboard.style.display = 'grid';
-            // 修正點：進入第二個頁面時不隱藏選單，保持可隨時點擊狀態
             loadTrack(); syncUI();
         });
 
-        function speakTeamRadio(type, val = "") {
+        // 🔊 修正點：男聲優先機制 + 只播放極簡字詞
+        function speakTeamRadio(type) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 let txt = i18n[currentLang][type] || "";
-                if (type === 'spkStartLap1') txt = i18n[currentLang].spkStartLap1;
-                else if (type === 'spkStartLapN') txt = i18n[currentLang].spkStartLapN.replace('{lap}', val);
                 
                 const utterance = new SpeechSynthesisUtterance(txt);
                 const targetLang = currentLang === 'en' ? 'en-GB' : 'zh-TW';
@@ -550,14 +548,14 @@
             syncUI(); loadTrack(); 
             const audioVal = audioSelect.value;
             if(audioVal === 'rain') startAudioGenerator('rain');
-            speakTeamRadio(currentLap === 1 ? 'spkStartLap1' : 'spkStartLapN', currentLap);
+            speakTeamRadio('spkStart'); // 播放「開始」
         }
 
         function switchToRestMode() {
             stopAudioGenerator(); currentMode = "REST";
             totalModeDuration = parseInt(restDurationInput.value) * 60 * 1000; modeTimeLeft = totalModeDuration;
             totalPitsCount++; timerBox.style.color = "var(--neon-blue)";
-            syncUI(); speakTeamRadio('spkRest');
+            syncUI(); speakTeamRadio('spkRest'); // 播放「休息」
         }
 
         startBtn.addEventListener('click', () => {
@@ -572,7 +570,7 @@
 
         abortBtn.addEventListener('click', () => {
             stopAudioGenerator(); cancelAnimationFrame(animationId);
-            speakTeamRadio('spkAbort');
+            speakTeamRadio('spkAbort'); // 播放「退賽」
             setTimeout(() => { 
                 const sum = i18n[currentLang].alertSum.replace('{status}', currentLang === 'en' ? 'RETIRED' : '退賽')
                     .replace('{driver}', activeDriver.n).replace('{laps}', totalPitsCount)
@@ -583,7 +581,7 @@
 
         function completeAllLoops() {
             stopAudioGenerator(); cancelAnimationFrame(animationId);
-            speakTeamRadio('spkFinish');
+            speakTeamRadio('spkFinish'); // 播放「結束」
             setTimeout(() => { 
                 const sum = i18n[currentLang].alertSum.replace('{status}', currentLang === 'en' ? 'FINISHED' : '完賽')
                     .replace('{driver}', activeDriver.n).replace('{laps}', totalPitsCount)
