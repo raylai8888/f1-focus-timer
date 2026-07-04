@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Study Telemetry - Ultimate Focus Loop v0.0.6</title>
+    <title>F1 Study Telemetry - Ultimate Focus Loop v0.0.7</title>
     <style>
         :root {
             --bg-main: #141923;
@@ -72,7 +72,7 @@
         }
         .feature-card h3 { margin: 0 0 10px 0; color: var(--neon-yellow); font-size: 1rem; border-bottom: 1px solid #3a465d; padding-bottom: 5px;}
         .feature-card p { margin: 0 0 6px 0; font-size: 0.75rem; color: #cbd5e0; line-height: 1.4; }
-        .feature-card .warn { color: var(--f1-red); font-weight: bold; font-size: 0.7rem; background: rgba(255,59,48,0.1); padding: 3px; border-radius: 4px; display: inline-block; margin-top: 5px; }
+        .feature-card .warn { color: var(--f1-red); font-weight: bold; font-size: 0.75rem; background: rgba(255,59,48,0.1); padding: 6px; border-radius: 4px; display: inline-block; margin-top: 5px; line-height: 1.3; }
         .feature-card .license-text { font-family: monospace; font-size: 11px; color: #718096; }
 
         .btn-launch {
@@ -166,7 +166,7 @@
 </head>
 <body>
 
-    <div class="version-tag">v0.0.6-final</div>
+    <div class="version-tag">v0.0.7-final</div>
 
     <div id="intro-page">
         <h1 data-i18n="introTitle">LAP TIME FOCUS <span>PRO</span></h1>
@@ -177,7 +177,7 @@
                 <h3 data-i18n="rule1Title">1. Set Parameters</h3>
                 <p data-i18n="rule1L1">• <b>Circuit:</b> Choose vector track layout.</p>
                 <p data-i18n="rule1L2">• <b>Audio:</b> Select rain or silent.</p>
-                <p class="warn" data-i18n="rule1Warn">⚠️ WARNING: Time and Laps must be INTEGERS. No decimals!</p>
+                <p class="warn" data-i18n="rule1Warn">⚠️ WARNING: Time and Laps values must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!</p>
             </div>
             <div class="feature-card">
                 <h3 data-i18n="rule2Title">2. Select Driver</h3>
@@ -222,11 +222,11 @@
                     </select>
                 </div>
                 <div>
-                    <label data-i18n="lblFocus">FOCUS (Int)</label>
+                    <label data-i18n="lblFocus">STINT MINS (Int)</label>
                     <input type="number" id="durationInput" value="25" min="1" max="120" step="1" style="width: 45px;">
                 </div>
                 <div>
-                    <label data-i18n="lblRest">REST (Int)</label>
+                    <label data-i18n="lblRest">PIT STOP MINS (Int)</label>
                     <input type="number" id="restDurationInput" value="5" min="1" max="30" step="1" style="width: 45px;">
                 </div>
                 <div>
@@ -259,11 +259,11 @@
                         <div class="data-val" id="dataLaps">Lap 1 / 2</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblTotFocus">Focus Time</div>
+                        <div class="data-label" data-i18n="lblTotFocus">Total Stint Time</div>
                         <div class="data-val" id="dataFocusTime">00:00</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblTotRest">Rest Time</div>
+                        <div class="data-label" data-i18n="lblTotRest">Total Pit Time</div>
                         <div class="data-val" id="dataRestTime">00:00</div>
                     </div>
                 </div>
@@ -293,37 +293,39 @@
         const i18n = {
             en: {
                 introTitle: "LAP TIME FOCUS <span>PRO</span>", introSub: "System Operations & Guidelines",
-                rule1Title: "1. Set Parameters", rule1L1: "• Circuit: Choose vector track layout.", rule1L2: "• Audio: Select rain or silent.", rule1Warn: "⚠️ WARNING: FOCUS, REST and LAPS must be INTEGERS!",
+                rule1Title: "1. Set Parameters", rule1L1: "• Circuit: Choose vector track layout.", rule1L2: "• Audio: Select rain or silent.", rule1Warn: "⚠️ WARNING: Time and Laps values must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!",
                 rule2Title: "2. Select Driver", rule2L1: "• Roster: Pick any driver from the grid.", rule2L2: "• Sync: UI and Car colors update automatically.",
                 rule3Title: "3. Lights Out", rule3L1: "• Start: Voice radio check on activation.", rule3L2: "• Lock: UI prevents distractions during stint.",
                 rule4Title: "⚖️ License & Disclaimer", rule4L1: "Copyright (c) 2026 raylai8888. All rights reserved.", rule4L2: "Free for non-commercial use only. Not affiliated with F1, FIA, or any Formula 1 teams.",
                 btnLaunch: "Launch Paddock", dbTitle: "F1 STUDY LOOP SYSTEM",
-                lblCircuit: "CIRCUIT", lblAudio: "AUDIO", lblFocus: "FOCUS (Int)", lblRest: "REST (Int)", lblLaps: "LAPS (Int)",
+                lblCircuit: "CIRCUIT", lblAudio: "AUDIO", lblFocus: "STINT MINS (Int)", lblRest: "PIT STOP MINS (Int)", lblLaps: "LAPS (Int)",
                 optBahrain: "Bahrain GP", optSuzuka: "Suzuka Circuit", optMonaco: "Monaco GP",
                 optRain: "Rain Noise", optNone: "Silent",
                 btnStart: "START SYSTEM", btnAbort: "RETIRE / ABORT",
-                lblState: "Current State", lblCurLap: "Current Lap", lblTotFocus: "Total Focus Time", lblTotRest: "Total Rest Time",
-                stateReady: "READY", stateFocus: "ON TRACK (FOCUS)", stateRest: "PIT BOX (RESTING)",
-                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - FULL FOCUS", lblTimerRest: "LAP {lap} - PIT STOP RECOVERY",
+                lblState: "Current State", lblCurLap: "Current Lap", lblTotFocus: "Total Stint Time", lblTotRest: "Total Pit Time",
+                stateReady: "READY", stateFocus: "ON TRACK (STINT)", stateRest: "PIT BOX (RECOVERY)",
+                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - RACING STINT", lblTimerRest: "LAP {lap} - PIT RECOVERY",
                 spkStart: "Start.", spkRest: "Rest.", spkAbort: "Abort.", spkFinish: "Finish.",
-                alertSum: "🏁 TELEMETRY SUMMARY 🏁\n-----------------------------\nStatus: {status}\nDriver: {driver}\n\n📊 STATS:\n• Laps: {laps}\n• Focus: {focus} mins\n• Rest: {rest} mins\n\nCongratulations on completing your focus session!"
+                alertSum: "🏁 TELEMETRY SUMMARY 🏁\n-----------------------------\nStatus: {status}\nDriver: {driver}\n\n📊 STATS:\n• Laps: {laps}\n• Stint Focus: {focus} mins\n• Pit Rest: {rest} mins\n\nCongratulations on completing your focus session!"
             },
             zh: {
                 introTitle: "LAP TIME FOCUS <span>PRO</span>", introSub: "系統操作手冊與使用規範",
-                rule1Title: "1. 設定參數", rule1L1: "• 選擇賽道：決定向量地圖路徑。", rule1L2: "• 選擇背景音：舒適雨聲或保持安靜。", rule1Warn: "⚠️ 警告：時間與圈數請務必輸入「整數」！",
-                rule2Title: "2. 選定車手", rule2L1: "• 名單：自由點選 2026 網格車手。", rule2L2: "• 連動：車隊色與代碼會自動同步。",
-                rule3Title: "3. 燈滅起跑", rule3L1: "• 啟動：START 後語音廣播與音效開啟。", rule3L2: "• 鎖定：介面自動遮罩鎖定防止偷懶。",
-                rule4Title: "⚖️ 版權與免責聲明", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有，翻印必究。", rule4L2: "本系統僅限非商業免費使用。本專案與 F1、FIA 或 any Formula 1 車隊均無隸屬關係。",
-                btnLaunch: "進入賽道 Launch", dbTitle: "F1 STUDY LOOP SYSTEM",
-                lblCircuit: "CIRCUIT / 賽道", lblAudio: "AUDIO / 音效", lblFocus: "FOCUS / 專注(整數)", lblRest: "REST / 休息(整數)", lblLaps: "LAPS / 圈數(整數)",
-                optBahrain: "Bahrain GP (巴林)", optSuzuka: "Suzuka (鈴鹿)", optMonaco: "Monaco (摩納哥)",
-                optRain: "White Noise / 雨聲", optNone: "None / 靜音",
-                btnStart: "START SYSTEM", btnAbort: "RETIRE / 中途退賽",
-                lblState: "當前狀態", lblCurLap: "當前圈數", lblTotFocus: "累積專注", lblTotRest: "累積休息",
-                stateReady: "READY", stateFocus: "ON TRACK (專注)", stateRest: "PIT BOX (休息)",
-                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - 全力專注中", lblTimerRest: "LAP {lap} - 維修站休息中",
+                rule1Title: "1. 設定設定參數", rule1L1: "• 選擇賽道：決定向量地圖路徑。", rule1L2: "• 選擇背景音：舒適雨聲或保持安靜。",
+                // 修正點：中文明確加上防呆禁止規範
+                rule1Warn: "⚠️ 警告：時間與圈數欄位請務必輸入「正整數」。嚴禁輸入數字 0、負數或小數點，否則系統遙測將會死機當機！",
+                rule2Title: "2. 選定出場車手", rule2L1: "• 車手網格：自由點選 2026 網格車手。", rule2L2: "• 自動連動：車隊代表色與三字代碼會即時同步。",
+                rule3Title: "3. 五燈熄滅起跑", rule3L1: "• 系統啟動：START 後極簡男聲語音播報與音效同步開啟。", rule3L2: "• 防干擾鎖定：介面自動遮罩鎖定阻斷一切外界偷懶誘因。",
+                rule4Title: "⚖️ 版權與免責聲明", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有，翻印必究。", rule4L2: "本系統僅限非商業免費使用。本專案與 F1、FIA 或任何一級方程式車隊均無隸屬關係。",
+                btnLaunch: "開入維修區 Paddock", dbTitle: "F1 STUDY LOOP SYSTEM / 賽車專注時脈系統",
+                lblCircuit: "CIRCUIT / 賽道選擇", lblAudio: "AUDIO / 音效模式", lblFocus: "STINT / 專注時段(正整數)", lblRest: "PIT STOP / 進站維修(正整數)", lblLaps: "LAPS / 總圈數(正整數)",
+                optBahrain: "Bahrain GP (巴林站)", optSuzuka: "Suzuka Circuit (日本鈴鹿站)", optMonaco: "Circuit de Monaco (摩納哥站)",
+                optRain: "Rain Noise / 專注雨聲", optNone: "Silent / 保持安靜",
+                btnStart: "START / 燈滅起跑", btnAbort: "RETIRE / 退賽 (DNF)",
+                lblState: "當前狀態", lblCurLap: "當前圈數", lblTotFocus: "累積專注 (Stint)", lblTotRest: "累積維修 (Pit)",
+                stateReady: "READY / 整備就緒", stateFocus: "ON TRACK / 賽道衝刺中", stateRest: "PIT BOX / 進站修整中",
+                lblStandby: "GARAGE STANDBY / 車庫整備中", lblTimerFocus: "LAP {lap} - 賽道衝刺全力專注中", lblTimerRest: "LAP {lap} - 維修站心率修整中",
                 spkStart: "開始。", spkRest: "休息。", spkAbort: "退賽。", spkFinish: "結束。",
-                alertSum: "🏁 官方數據總結報告 🏁\n-----------------------------\n結果: {status}\n車手: {driver}\n\n📊 遙測統計：\n• 圈數: {laps} 圈\n• 專注: {focus} 分鐘\n• 休息: {rest} 分鐘\n\n恭喜完成專注！"
+                alertSum: "🏁 官方數據總結報告 🏁\n-----------------------------\n結果: {status}\n車手: {driver}\n\n📊 遙測統計：\n• 總圈數: {laps} 圈\n• 衝刺專注: {focus} 分鐘\n• 進站休息: {rest} 分鐘\n\n恭喜完成專注！"
             }
         };
 
