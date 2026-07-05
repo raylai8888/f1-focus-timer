@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Study Telemetry - Ultimate Focus Loop v0.0.7</title>
+    <title>Aetheria Studio - Telemetry Control v0.0.8-beta</title>
     <style>
         :root {
             --bg-main: #141923;
@@ -15,6 +15,7 @@
             --neon-green: #34c759;
             --neon-blue: #007aff;
             --neon-yellow: #ffcc00;
+            --purple-fastest: #d000ff;
         }
 
         * { box-sizing: border-box; }
@@ -30,14 +31,12 @@
             position: relative;
         }
 
-        /* 版本號標記 */
         .version-tag {
             position: absolute; bottom: 10px; right: 15px;
             font-family: monospace; font-size: 10px; color: #4a5568;
             z-index: 100; pointer-events: none;
         }
 
-        /* 語言切換選單：置於全域最高層級，並使用固定定位確保永遠出現在畫面最右上角 */
         .lang-selector {
             position: fixed; top: 20px; right: 20px; z-index: 99999;
             background: var(--panel-inner); border: 1px solid #4a5568; color: #fff;
@@ -65,12 +64,15 @@
 
         .features-grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
-            max-width: 900px; width: 100%; margin-bottom: 5px;
+            max-width: 950px; width: 100%; margin-bottom: 5px;
         }
         .feature-card {
             background: var(--panel-bg); border: 1px solid #2d3748; padding: 18px; border-radius: 12px; text-align: left;
         }
         .feature-card h3 { margin: 0 0 10px 0; color: var(--neon-yellow); font-size: 1rem; border-bottom: 1px solid #3a465d; padding-bottom: 5px;}
+        .feature-card.mode-countdown h3 { color: var(--f1-red); }
+        .feature-card.mode-countup h3 { color: var(--neon-green); }
+        
         .feature-card p { margin: 0 0 6px 0; font-size: 0.75rem; color: #cbd5e0; line-height: 1.4; }
         .feature-card .warn { color: var(--f1-red); font-weight: bold; font-size: 0.75rem; background: rgba(255,59,48,0.1); padding: 6px; border-radius: 4px; display: inline-block; margin-top: 5px; line-height: 1.3; }
         .feature-card .license-text { font-family: monospace; font-size: 11px; color: #718096; }
@@ -143,8 +145,15 @@
             padding: 10px; border-radius: 6px; cursor: pointer; text-transform: uppercase;
         }
         .btn-go { background: var(--neon-green); }
-        .btn-abort { background: rgba(255,255,255,0.1); color: var(--text-dark); }
+        .btn-abort { background: #555; color: #fff; }
+        .btn-abort.in-lap-active { background: var(--f1-red) !important; animation: pulse 1s infinite; }
         .btn:disabled { background: #2d3748; color: #718096; cursor: not-allowed; }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
 
         .bottom-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; z-index: 15; }
         .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -166,37 +175,42 @@
 </head>
 <body>
 
-    <div class="version-tag">v0.0.7-final</div>
+    <div class="version-tag">v0.0.8-beta</div>
 
     <div id="intro-page">
-        <h1 data-i18n="introTitle">LAP TIME FOCUS <span>PRO</span></h1>
-        <div class="subtitle" data-i18n="introSub">System Operations & Guidelines</div>
+        <h1 data-i18n="introTitle">AETHERIA FOCUS <span>TELEMETRY</span></h1>
+        <div class="subtitle" data-i18n="introSub">Race Control Session Operations Manual</div>
         
         <div class="features-grid">
-            <div class="feature-card">
-                <h3 data-i18n="rule1Title">1. Set Parameters</h3>
-                <p data-i18n="rule1L1">• <b>Circuit:</b> Choose vector track layout.</p>
-                <p data-i18n="rule1L2">• <b>Audio:</b> Select rain or silent.</p>
-                <p class="warn" data-i18n="rule1Warn">⚠️ WARNING: Time and Laps values must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!</p>
+            <div class="feature-card mode-countdown">
+                <h3 data-i18n="cardCountDownTitle">⏱️ 🏁 倒計時：限時衝刺賽模式</h3>
+                <p data-i18n="cardCountDownL1">• <b>時間封頂：</b>設定固定時間（如 25 分鐘）進行倒數。</p>
+                <p data-i18n="cardCountDownL2">• <b>自動格子旗：</b>當時間歸零時，系統會自動切斷音效並鎖定畫面，立即結算本次測試數據報告。</p>
+                <p data-i18n="cardCountDownL3">• <b>中途放棄：</b>若在時間結束前按鈕離開，屬於「RETIRE（退賽 DNF）」，數據不予紀錄。</p>
             </div>
-            <div class="feature-card">
-                <h3 data-i18n="rule2Title">2. Select Driver</h3>
-                <p data-i18n="rule2L1">• <b>Roster:</b> Pick any driver from the grid.</p>
-                <p data-i18n="rule2L2">• <b>Sync:</b> UI and Car colors update automatically.</p>
+            
+            <div class="feature-card mode-countup">
+                <h3 data-i18n="cardCountUpTitle">🏎️ 🟢 正計時：自由練習賽模式 (FP1)</h3>
+                <p data-i18n="cardCountUpL1">• <b>無限刷圈：</b>時間從 0 往上計時，無上限，適合進入深度工作心流狀態。</p>
+                <p data-i18n="cardCountUpL2">• <b>強制進站圈：</b>點擊「BOX / FINISH」不會立刻中斷，系統強制賽車必須跑完當前這一圈衝線，才算安全完賽、保存存檔。</p>
+                <p data-i18n="cardCountUpL3">• <b>最快單圈 (紫圈)：</b>專注越久車身越輕，單圈配速自動變快，僅在面板顯示最速那一圈。</p>
             </div>
+
             <div class="feature-card">
-                <h3 data-i18n="rule3Title">3. Lights Out</h3>
-                <p data-i18n="rule3L1">• <b>Start:</b> Voice radio check on activation.</p>
-                <p data-i18n="rule3L2">• <b>Lock:</b> UI prevents distractions during stint.</p>
+                <h3 data-i18n="rule1Title">🔧 遙測基本限制與防呆</h3>
+                <p data-i18n="rule1L1">• <b>賽道選擇：</b>可任意加載巴林、日本鈴鹿或摩納哥向量線路。</p>
+                <p data-i18n="rule1L2">• <b>音效切換：</b>支援高質感模擬雨聲或保持極致安靜。</p>
+                <p class="warn" data-i18n="rule1Warn">⚠️ 警告：初始單圈秒數必須輸入「正整數」。嚴禁輸入 0、負數或帶小數點，否則遙測底層引擎會當機死機！</p>
             </div>
+
             <div class="feature-card">
-                <h3 data-i18n="rule4Title">⚖️ License & Declaration</h3>
-                <p data-i18n="rule4L1">Copyright (c) 2026 raylai8888. All rights reserved.</p>
-                <p class="license-text" data-i18n="rule4L2">Free for non-commercial use only. Not affiliated with F1, FIA, or any Formula 1 teams.</p>
+                <h3 data-i18n="rule4Title">⚖️ 版權與專案宣告</h3>
+                <p data-i18n="rule4L1">Copyright (c) 2026 raylai8888. 版權所有。</p>
+                <p class="license-text" data-i18n="rule4L2">本系統僅限非商業用途免費使用。本專案與一級方程式賽車官方（F1）、FIA 或任何真實車隊無任何隸屬或商業合作關係。</p>
             </div>
         </div>
 
-        <button class="btn-launch" id="launchBtn" data-i18n="btnLaunch">Launch Paddock</button>
+        <button class="btn-launch" id="launchBtn" data-i18n="btnLaunch">開入維修區 Paddock</button>
     </div>
 
     <div id="telemetry-dashboard">
@@ -204,7 +218,7 @@
         <div id="paddockLock" class="lock-overlay" style="grid-column: 1; grid-row: 2; width:100%; height:100%; border-radius:10px;"></div>
 
         <div class="header-strip">
-            <h1 data-i18n="dbTitle">F1 STUDY LOOP SYSTEM</h1>
+            <h1 data-i18n="dbTitle">AETHERIA PRACTICE LOGIC</h1>
             <div class="config-box">
                 <div>
                     <label data-i18n="lblCircuit">CIRCUIT</label>
@@ -222,16 +236,8 @@
                     </select>
                 </div>
                 <div>
-                    <label data-i18n="lblFocus">STINT MINS (Int)</label>
-                    <input type="number" id="durationInput" value="25" min="1" max="120" step="1" style="width: 45px;">
-                </div>
-                <div>
-                    <label data-i18n="lblRest">PIT STOP MINS (Int)</label>
-                    <input type="number" id="restDurationInput" value="5" min="1" max="30" step="1" style="width: 45px;">
-                </div>
-                <div>
-                    <label data-i18n="lblLaps">LAPS (Int)</label>
-                    <input type="number" id="loopInput" value="2" min="1" max="10" step="1" style="width: 45px;">
+                    <label id="lblFocus" data-i18n="lblFocus">BASE LAP TIME (SEC)</label>
+                    <input type="number" id="durationInput" value="80" min="10" max="600" step="1" style="width: 55px;">
                 </div>
             </div>
         </div>
@@ -241,10 +247,10 @@
         <div class="main-telemetry">
             <div class="focus-timer-panel">
                 <div class="timer-label" id="timerLabel" data-i18n="lblStandby">GARAGE STANDBY</div>
-                <div class="big-timer" id="timerBox">25:00</div>
+                <div class="big-timer" id="timerBox">00:00</div>
                 <div class="action-bar">
-                    <button class="btn btn-go" id="startBtn" data-i18n="btnStart">START SYSTEM</button>
-                    <button class="btn btn-abort" id="abortBtn" disabled data-i18n="btnAbort">RETIRE</button>
+                    <button class="btn btn-go" id="startBtn" data-i18n="btnStart">GREEN LIGHT / OUT</button>
+                    <button class="btn btn-abort" id="abortBtn" disabled data-i18n="btnAbort">BOX / FINISH</button>
                 </div>
             </div>
 
@@ -255,16 +261,12 @@
                         <div class="data-val" id="dataStatus" style="color:var(--neon-blue);" data-i18n="stateReady">READY</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblCurLap">Lap</div>
-                        <div class="data-val" id="dataLaps">Lap 1 / 2</div>
+                        <div class="data-label" data-i18n="lblCurLap">Current Lap</div>
+                        <div class="data-val" id="dataLaps">Lap 1</div>
                     </div>
-                    <div class="data-box">
-                        <div class="data-label" data-i18n="lblTotFocus">Total Stint Time</div>
-                        <div class="data-val" id="dataFocusTime">00:00</div>
-                    </div>
-                    <div class="data-box">
-                        <div class="data-label" data-i18n="lblTotRest">Total Pit Time</div>
-                        <div class="data-val" id="dataRestTime">00:00</div>
+                    <div class="data-box" style="grid-column: 1 / span 2; border: 1px dashed var(--purple-fastest);">
+                        <div class="data-label" style="color:var(--purple-fastest);" data-i18n="lblFastestLap">⚡ FASTEST LAP RECORD</div>
+                        <div class="data-val" id="fastestLapBox" style="color:var(--purple-fastest); font-size:1.3rem;">NO RECORD</div>
                     </div>
                 </div>
                 <div class="map-box">
@@ -292,40 +294,50 @@
     <script>
         const i18n = {
             en: {
-                introTitle: "LAP TIME FOCUS <span>PRO</span>", introSub: "System Operations & Guidelines",
-                rule1Title: "1. Set Parameters", rule1L1: "• Circuit: Choose vector track layout.", rule1L2: "• Audio: Select rain or silent.", rule1Warn: "⚠️ WARNING: Time and Laps values must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!",
-                rule2Title: "2. Select Driver", rule2L1: "• Roster: Pick any driver from the grid.", rule2L2: "• Sync: UI and Car colors update automatically.",
-                rule3Title: "3. Lights Out", rule3L1: "• Start: Voice radio check on activation.", rule3L2: "• Lock: UI prevents distractions during stint.",
-                rule4Title: "⚖️ License & Disclaimer", rule4L1: "Copyright (c) 2026 raylai8888. All rights reserved.", rule4L2: "Free for non-commercial use only. Not affiliated with F1, FIA, or any Formula 1 teams.",
-                btnLaunch: "Launch Paddock", dbTitle: "F1 STUDY LOOP SYSTEM",
-                lblCircuit: "CIRCUIT", lblAudio: "AUDIO", lblFocus: "STINT MINS (Int)", lblRest: "PIT STOP MINS (Int)", lblLaps: "LAPS (Int)",
+                introTitle: "AETHERIA FOCUS <span>TELEMETRY</span>", introSub: "Race Control Session Operations Manual",
+                cardCountDownTitle: "⏱️ 🏁 COUNTDOWN: SPRINT MODE",
+                cardCountDownL1: "• Time Limit: Fixed countdown duration (e.g., 25 mins) for sprint focus.",
+                cardCountDownL2: "• Chequered Flag: System automatically locks on 00:00 and fires reporting.",
+                cardCountDownL3: "• Abort Session: Terminating early triggers DNF (Did Not Finish) and discards data.",
+                cardCountUpTitle: "🏎️ 🟢 COUNT-UP: FREE PRACTICE MODE (FP1)",
+                cardCountUpL1: "• Infinite Stint: Time counts up from zero endlessly, ideal for deep deep focus flows.",
+                cardCountUpL2: "• In-Lap Mandatory: Clicking BOX will force the car to complete the current lap before saving.",
+                cardCountUpL3: "• Purple Lap: Fuel burn simulator speeds up target lap pacing as the session scales.",
+                rule1Title: "🔧 Core Telemetry Rules & Safeties", rule1L1: "• Circuit: Choose vector track layout.", rule1L2: "• Audio: Select rain or silent.", rule1Warn: "⚠️ WARNING: Target Lap time values must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!",
+                rule4Title: "⚖️ License & Declaration", rule4L1: "Copyright (c) 2026 raylai8888. All rights reserved.", rule4L2: "Free for non-commercial use only. Not affiliated with F1.",
+                btnLaunch: "開入維修區 Paddock", dbTitle: "AETHERIA PRACTICE LOGIC",
+                lblCircuit: "CIRCUIT", lblAudio: "AUDIO", lblFocus: "BASE LAP TIME (SEC)",
                 optBahrain: "Bahrain GP", optSuzuka: "Suzuka Circuit", optMonaco: "Monaco GP",
                 optRain: "Rain Noise", optNone: "Silent",
-                btnStart: "START SYSTEM", btnAbort: "RETIRE / ABORT",
-                lblState: "Current State", lblCurLap: "Current Lap", lblTotFocus: "Total Stint Time", lblTotRest: "Total Pit Time",
-                stateReady: "READY", stateFocus: "ON TRACK (STINT)", stateRest: "PIT BOX (RECOVERY)",
-                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - RACING STINT", lblTimerRest: "LAP {lap} - PIT RECOVERY",
-                spkStart: "Start.", spkRest: "Rest.", spkAbort: "Abort.", spkFinish: "Finish.",
-                alertSum: "🏁 TELEMETRY SUMMARY 🏁\n-----------------------------\nStatus: {status}\nDriver: {driver}\n\n📊 STATS:\n• Laps: {laps}\n• Stint Focus: {focus} mins\n• Pit Rest: {rest} mins\n\nCongratulations on completing your focus session!"
+                btnStart: "GREEN LIGHT / OUT", btnAbort: "BOX / FINISH",
+                lblState: "State", lblCurLap: "Current Lap", lblFastestLap: "⚡ FASTEST LAP RECORD",
+                stateReady: "READY", stateFocus: "FREE PRACTICE (FP1)", stateInLap: "IN-LAP (COOLING)",
+                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - FLYING LAP", lblTimerRest: "LAP {lap} - ENTERING PIT LANE",
+                spkStart: "Start.", spkRest: "Rest.", spkFinish: "Finish.",
+                alertSum: "🏁 PRACTICE TELEMETRY REPORT 🏁\n-----------------------------\nDriver: {driver}\nTotal Stint: {totalTime}\n\n📊 RECAP:\n• Total Laps Completed: {laps} Laps\n• {fastest}\n\nSession finished successfully!"
             },
             zh: {
-                introTitle: "LAP TIME FOCUS <span>PRO</span>", introSub: "系統操作手冊與使用規範",
-                rule1Title: "1. 設定設定參數", rule1L1: "• 選擇賽道：決定向量地圖路徑。", rule1L2: "• 選擇背景音：舒適雨聲或保持安靜。",
-                // 修正點：中文明確加上防呆禁止規範
-                rule1Warn: "⚠️ 警告：時間與圈數欄位請務必輸入「正整數」。嚴禁輸入數字 0、負數或小數點，否則系統遙測將會死機當機！",
-                rule2Title: "2. 選定出場車手", rule2L1: "• 車手網格：自由點選 2026 網格車手。", rule2L2: "• 自動連動：車隊代表色與三字代碼會即時同步。",
-                rule3Title: "3. 五燈熄滅起跑", rule3L1: "• 系統啟動：START 後極簡男聲語音播報與音效同步開啟。", rule3L2: "• 防干擾鎖定：介面自動遮罩鎖定阻斷一切外界偷懶誘因。",
-                rule4Title: "⚖️ 版權與免責聲明", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有，翻印必究。", rule4L2: "本系統僅限非商業免費使用。本專案與 F1、FIA 或任何一級方程式車隊均無隸屬關係。",
-                btnLaunch: "開入維修區 Paddock", dbTitle: "F1 STUDY LOOP SYSTEM / 賽車專注時脈系統",
-                lblCircuit: "CIRCUIT / 賽道選擇", lblAudio: "AUDIO / 音效模式", lblFocus: "STINT / 專注時段(正整數)", lblRest: "PIT STOP / 進站維修(正整數)", lblLaps: "LAPS / 總圈數(正整數)",
+                introTitle: "AETHERIA FOCUS <span>TELEMETRY</span>", introSub: "賽事控制維修區系統操作手冊",
+                cardCountDownTitle: "⏱️ 🏁 倒計時：限時衝刺賽模式",
+                cardCountDownL1: "• 時間封頂：設定固定時間（如 25 分鐘）進行倒數，高壓限時衝刺。",
+                cardCountDownDownL2: "• 自動格子旗：當時間歸零時，系統自動切斷音效並鎖定畫面，立即結算數據報告。",
+                cardCountDownL3: "• 中途放棄：若在時間結束前按鈕離開，屬於「RETIRE（退賽 DNF）」，數據不予紀錄。",
+                cardCountUpTitle: "🏎️ 🟢 正計時：自由練習賽模式 (FP1)",
+                cardCountUpL1: "• 無限刷圈：時間從 0 往上計時，無上限，適合進入深度極致工作心流狀態。",
+                cardCountUpL2: "• 強制進站圈：點擊「BOX / FINISH」不會立刻中斷，系統強制賽車跑完當前圈衝線才保存存檔。",
+                cardCountUpL3: "• 最快單圈 (紫圈)：專注越久車身越輕，單圈配速自動變快，僅顯示最速一圈歷史紀錄。",
+                rule1Title: "🔧 遙測基本限制與防呆", rule1L1: "• 賽道選擇：可任意加載巴林、日本鈴鹿或摩納哥向量線路。", rule1L2: "• 音效切換：支援高質感模擬雨聲或保持極致安靜。", rule1Warn: "⚠️ 警告：初始單圈秒數必須輸入「正整數」。嚴禁輸入 0、負數或帶小數點，否則遙測底層引擎會當機死機！",
+                rule4Title: "⚖️ 版權與專案宣告", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有。", rule4L2: "本系統僅限非商業用途免費使用。本專案與一級方程式賽車官方（F1）、FIA 或任何真實車隊無任何隸屬或商業合作關係。",
+                btnLaunch: "開入維修區 Paddock", dbTitle: "AETHERIA PRACTICE LOGIC / 自由練習賽遙測系統",
+                lblCircuit: "CIRCUIT / 賽道選擇", lblAudio: "AUDIO / 音效模式", lblFocus: "BASE LAP TIME / 初始單圈秒數(正整數)",
                 optBahrain: "Bahrain GP (巴林站)", optSuzuka: "Suzuka Circuit (日本鈴鹿站)", optMonaco: "Circuit de Monaco (摩納哥站)",
                 optRain: "Rain Noise / 專注雨聲", optNone: "Silent / 保持安靜",
-                btnStart: "START / 燈滅起跑", btnAbort: "RETIRE / 退賽 (DNF)",
-                lblState: "當前狀態", lblCurLap: "當前圈數", lblTotFocus: "累積專注 (Stint)", lblTotRest: "累積維修 (Pit)",
-                stateReady: "READY / 整備就緒", stateFocus: "ON TRACK / 賽道衝刺中", stateRest: "PIT BOX / 進站修整中",
-                lblStandby: "GARAGE STANDBY / 車庫整備中", lblTimerFocus: "LAP {lap} - 賽道衝刺全力專注中", lblTimerRest: "LAP {lap} - 維修站心率修整中",
-                spkStart: "開始。", spkRest: "休息。", spkAbort: "退賽。", spkFinish: "結束。",
-                alertSum: "🏁 官方數據總結報告 🏁\n-----------------------------\n結果: {status}\n車手: {driver}\n\n📊 遙測統計：\n• 總圈數: {laps} 圈\n• 衝刺專注: {focus} 分鐘\n• 進站休息: {rest} 分鐘\n\n恭喜完成專注！"
+                btnStart: "GREEN LIGHT / 出車測試", btnAbort: "BOX / 召回進站",
+                lblState: "當前狀態", lblCurLap: "當前圈數", lblFastestLap: "⚡ 最快單圈官方紀錄 (FASTEST LAP)",
+                stateReady: "READY / 整備就緒", stateFocus: "FREE PRACTICE / 自由練習計時中", stateInLap: "IN-LAP / 進站圈收尾中",
+                lblStandby: "GARAGE STANDBY / 車庫整備中", lblTimerFocus: "LAP {lap} - 刷圈專注進行中", lblTimerRest: "LAP {lap} - 召回減速開回維修區",
+                spkStart: "開始。", spkRest: "休息。", spkFinish: "結束。",
+                alertSum: "🏁 官方練習賽遙測數據總結 🏁\n-----------------------------\n出場車手: {driver}\n總測試時間: {totalTime}\n\n📊 刷圈統計：\n• 成功完賽圈數: {laps} 圈\n• {fastest}\n\n順利完成進站收尾！"
             }
         };
 
@@ -344,10 +356,12 @@
         ];
 
         let activeDriver = fullGrid[0].drivers[0]; let activeTeam = fullGrid[0];
-        let isSystemRunning = false; let currentMode = "FOCUS"; let currentLap = 1; let totalTargetLaps = 2;
-        let animationId; let lastTimestamp = 0; let modeTimeLeft = 0; let totalModeDuration = 0;
-        let statsFocusMs = 0; let statsRestMs = 0; let totalPitsCount = 0; let pathLength = 0;
+        let isSystemRunning = false; let isInLapState = false; let currentLap = 1;
+        let animationId; let lastTimestamp = 0; let totalElapsedMs = 0; let currentLapElapsedMs = 0;
+        let currentLapTargetMs = 0; let pathLength = 0;
         let audioCtx = null; let whiteNoiseNode = null;
+
+        let bestLapNum = 0; let bestLapTimeMs = Infinity;
 
         const langSelect = document.getElementById('langSelect');
         const introPage = document.getElementById('intro-page');
@@ -357,8 +371,6 @@
         const trackSelect = document.getElementById('trackSelect');
         const audioSelect = document.getElementById('audioSelect');
         const durationInput = document.getElementById('durationInput');
-        const restDurationInput = document.getElementById('restDurationInput');
-        const loopInput = document.getElementById('loopInput');
         const timerBox = document.getElementById('timerBox');
         const startBtn = document.getElementById('startBtn');
         const abortBtn = document.getElementById('abortBtn');
@@ -369,8 +381,7 @@
         const carText = document.getElementById('carText');
         const dataStatus = document.getElementById('dataStatus');
         const dataLaps = document.getElementById('dataLaps');
-        const dataFocusTime = document.getElementById('dataFocusTime');
-        const dataRestTime = document.getElementById('dataRestTime');
+        const fastestLapBox = document.getElementById('fastestLapBox');
         const timerLabel = document.getElementById('timerLabel');
         const configLock = document.getElementById('configLock');
         const paddockLock = document.getElementById('paddockLock');
@@ -396,34 +407,16 @@
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 let txt = i18n[currentLang][type] || "";
-                
                 const utterance = new SpeechSynthesisUtterance(txt);
-                const targetLang = currentLang === 'en' ? 'en-GB' : 'zh-TW';
-                utterance.lang = targetLang;
+                utterance.lang = currentLang === 'en' ? 'en-GB' : 'zh-TW';
                 
                 const voices = window.speechSynthesis.getVoices();
-                let selectedVoice = null;
-                
-                if (currentLang === 'en') {
-                    selectedVoice = voices.find(v => v.lang.startsWith('en') && 
-                        (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('george')));
-                } else {
-                    selectedVoice = voices.find(v => (v.lang.includes('ZH') || v.lang.includes('TW')) && 
-                        (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('kangkang') || v.name.toLowerCase().includes('yating') === false));
-                }
-                
-                if (!selectedVoice) {
-                    selectedVoice = voices.find(v => v.lang.includes(currentLang === 'en' ? 'GB' : 'TW'));
-                }
+                let selectedVoice = voices.find(v => v.lang.startsWith(currentLang === 'en' ? 'en' : 'zh') && 
+                    (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('kangkang') || v.name.toLowerCase().includes('yating') === false));
                 
                 if (selectedVoice) utterance.voice = selectedVoice;
-                utterance.rate = 1.0; 
                 window.speechSynthesis.speak(utterance);
             }
-        }
-
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = () => {};
         }
 
         function startAudioGenerator(type) {
@@ -434,7 +427,6 @@
                 const bufferSize = 3 * audioCtx.sampleRate;
                 const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                 const data = buffer.getChannelData(0);
-                
                 if (type === 'rain') {
                     let b0, b1, b2, b3, b4, b5, b6; b0=b1=b2=b3=b4=b5=b6=0.0;
                     for (let i = 0; i < bufferSize; i++) {
@@ -446,7 +438,6 @@
                         data[i] *= 0.10; b6 = white * 0.115926;
                     }
                 }
-                
                 whiteNoiseNode = audioCtx.createBufferSource();
                 whiteNoiseNode.buffer = buffer; whiteNoiseNode.loop = true;
                 const filter = audioCtx.createBiquadFilter(); filter.type = 'lowpass';
@@ -477,27 +468,35 @@
         });
 
         function fmt(ms) {
-            let s = Math.ceil(ms / 1000); let m = String(Math.floor(s / 60)).padStart(2, '0');
-            s = String(s % 60).padStart(2, '0'); return `${m}:${s}`;
+            let totalSecs = Math.floor(ms / 1000);
+            let m = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+            let s = String(totalSecs % 60).padStart(2, '0');
+            return `${m}:${s}`;
         }
 
         function syncUI() {
             carText.textContent = activeDriver.c; carCircle.style.fill = activeTeam.color; 
             durationInput.value = Math.floor(durationInput.value);
-            restDurationInput.value = Math.floor(restDurationInput.value);
-            loopInput.value = Math.floor(loopInput.value);
-            dataLaps.textContent = `Lap ${currentLap} / ${loopInput.value}`;
-            if(!isSystemRunning) {
-                timerBox.textContent = `${String(durationInput.value).padStart(2,'0')}:00`;
+            dataLaps.textContent = `Lap ${currentLap}`;
+            
+            if (!isSystemRunning) {
+                timerBox.textContent = "00:00";
+                dataStatus.innerHTML = i18n[currentLang].stateReady;
                 timerLabel.innerHTML = i18n[currentLang].lblStandby;
             } else {
-                if(currentMode === "FOCUS") {
+                if (isInLapState) {
+                    dataStatus.innerHTML = i18n[currentLang].stateInLap;
+                    timerLabel.innerHTML = i18n[currentLang].lblTimerRest.replace('{lap}', currentLap);
+                } else {
                     dataStatus.innerHTML = i18n[currentLang].stateFocus;
                     timerLabel.innerHTML = i18n[currentLang].lblTimerFocus.replace('{lap}', currentLap);
-                } else {
-                    dataStatus.innerHTML = i18n[currentLang].stateRest;
-                    timerLabel.innerHTML = i18n[currentLang].lblTimerRest.replace('{lap}', currentLap);
                 }
+            }
+
+            if (bestLapNum > 0) {
+                fastestLapBox.textContent = `Lap ${bestLapNum} (${fmt(bestLapTimeMs)})`;
+            } else {
+                fastestLapBox.textContent = currentLang === 'en' ? "NO RECORD" : "暫無紀錄";
             }
         }
 
@@ -514,86 +513,97 @@
         function loopEngine(timestamp) {
             if (!lastTimestamp) lastTimestamp = timestamp;
             let delta = timestamp - lastTimestamp; lastTimestamp = timestamp;
-            modeTimeLeft = Math.max(0, modeTimeLeft - delta);
-            timerBox.textContent = fmt(modeTimeLeft);
-            if (currentMode === "FOCUS") {
-                statsFocusMs += delta; dataFocusTime.textContent = fmt(statsFocusMs);
-                let ratio = 1 - (modeTimeLeft / totalModeDuration);
-                trackProg.style.strokeDashoffset = pathLength - (pathLength * ratio);
-                const pt = trackProg.getPointAtLength(pathLength * ratio);
-                carNode.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
-                if (modeTimeLeft <= 0) switchToRestMode();
-            } else if (currentMode === "REST") {
-                statsRestMs += delta; dataRestTime.textContent = fmt(statsRestMs);
-                if (modeTimeLeft <= 0) {
-                    currentLap++;
-                    if (currentLap <= totalTargetLaps) switchToFocusMode();
-                    else { completeAllLoops(); return; }
+
+            totalElapsedMs += delta;
+            currentLapElapsedMs += delta;
+
+            timerBox.textContent = fmt(totalElapsedMs);
+
+            let ratio = Math.min(1, currentLapElapsedMs / currentLapTargetMs);
+            trackProg.style.strokeDashoffset = pathLength - (pathLength * ratio);
+            const pt = trackProg.getPointAtLength(pathLength * ratio);
+            carNode.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+
+            if (currentLapElapsedMs >= currentLapTargetMs) {
+                if (currentLapTargetMs < bestLapTimeMs) {
+                    bestLapTimeMs = currentLapTargetMs;
+                    bestLapNum = currentLap;
                 }
+
+                if (isInLapState) {
+                    completePracticeSession();
+                    return;
+                }
+
+                currentLap++;
+                currentLapElapsedMs = 0;
+                let nextTargetSec = Math.max(15, parseInt(durationInput.value) - (currentLap - 1) * 2);
+                currentLapTargetMs = nextTargetSec * 1000;
+                syncUI();
             }
+
             animationId = requestAnimationFrame(loopEngine);
-        }
-
-        function switchToFocusMode() {
-            currentMode = "FOCUS";
-            totalModeDuration = parseInt(durationInput.value) * 60 * 1000; modeTimeLeft = totalModeDuration;
-            timerBox.style.color = "var(--neon-yellow)";
-            syncUI(); loadTrack(); 
-            const audioVal = audioSelect.value;
-            if(audioVal === 'rain') startAudioGenerator('rain');
-            speakTeamRadio('spkStart'); 
-        }
-
-        function switchToRestMode() {
-            stopAudioGenerator(); currentMode = "REST";
-            totalModeDuration = parseInt(restDurationInput.value) * 60 * 1000; modeTimeLeft = totalModeDuration;
-            totalPitsCount++; timerBox.style.color = "var(--neon-blue)";
-            syncUI(); speakTeamRadio('spkRest'); 
         }
 
         startBtn.addEventListener('click', () => {
             if (!isSystemRunning) {
-                isSystemRunning = true; currentLap = 1;
-                totalTargetLaps = parseInt(loopInput.value); lastTimestamp = 0;
+                isSystemRunning = true; isInLapState = false;
+                currentLap = 1; totalElapsedMs = 0; currentLapElapsedMs = 0; lastTimestamp = 0;
+                bestLapNum = 0; bestLapTimeMs = Infinity;
+
+                currentLapTargetMs = parseInt(durationInput.value) * 1000;
+                timerBox.style.color = "var(--neon-yellow)";
                 startBtn.style.display = 'none'; abortBtn.disabled = false;
                 configLock.style.display = 'block'; paddockLock.style.display = 'block';
-                switchToFocusMode(); animationId = requestAnimationFrame(loopEngine);
+                
+                syncUI(); loadTrack();
+                if (audioSelect.value === 'rain') startAudioGenerator('rain');
+                speakTeamRadio('spkStart');
+
+                animationId = requestAnimationFrame(loopEngine);
             }
         });
 
         abortBtn.addEventListener('click', () => {
-            stopAudioGenerator(); cancelAnimationFrame(animationId);
-            speakTeamRadio('spkAbort'); 
-            setTimeout(() => { 
-                const sum = i18n[currentLang].alertSum.replace('{status}', currentLang === 'en' ? 'RETIRED' : '退賽')
-                    .replace('{driver}', activeDriver.n).replace('{laps}', totalPitsCount)
-                    .replace('{focus}', (statsFocusMs/60000).toFixed(1)).replace('{rest}', (statsRestMs/60000).toFixed(1));
-                alert(sum); resetSystem(); 
-            }, 50);
+            if (isSystemRunning && !isInLapState) {
+                isInLapState = true;
+                abortBtn.classList.add('in-lap-active');
+                syncUI();
+                speakTeamRadio('spkRest');
+            }
         });
 
-        function completeAllLoops() {
+        function completePracticeSession() {
             stopAudioGenerator(); cancelAnimationFrame(animationId);
-            speakTeamRadio('spkFinish'); 
-            setTimeout(() => { 
-                const sum = i18n[currentLang].alertSum.replace('{status}', currentLang === 'en' ? 'FINISHED' : '完賽')
-                    .replace('{driver}', activeDriver.n).replace('{laps}', totalPitsCount)
-                    .replace('{focus}', (statsFocusMs/60000).toFixed(1)).replace('{rest}', (statsRestMs/60000).toFixed(1));
-                alert(sum); resetSystem(); 
+            speakTeamRadio('spkFinish');
+
+            setTimeout(() => {
+                let fastestText = currentLang === 'en' 
+                    ? `Fastest Lap: Lap ${bestLapNum} (${fmt(bestLapTimeMs)})` 
+                    : `最快圈速: 第 ${bestLapNum} 圈 (${fmt(bestLapTimeMs)})`;
+                
+                const sum = i18n[currentLang].alertSum
+                    .replace('{driver}', activeDriver.n)
+                    .replace('{totalTime}', fmt(totalElapsedMs))
+                    .replace('{laps}', currentLap)
+                    .replace('{fastest}', fastestText);
+                
+                alert(sum); 
+                resetSystem();
             }, 50);
         }
 
         function resetSystem() {
-            isSystemRunning = false; statsFocusMs = 0; statsRestMs = 0; totalPitsCount = 0; lastTimestamp = 0;
-            currentLap = 1; stopAudioGenerator(); startBtn.style.display = 'block'; abortBtn.disabled = true;
+            isSystemRunning = false; isInLapState = false; lastTimestamp = 0; currentLap = 1;
+            bestLapNum = 0; bestLapTimeMs = Infinity;
+            stopAudioGenerator(); 
+            startBtn.style.display = 'block'; abortBtn.disabled = true;
+            abortBtn.classList.remove('in-lap-active');
             configLock.style.display = 'none'; paddockLock.style.display = 'none';
             updateLanguage(); loadTrack();
         }
 
         trackSelect.addEventListener('change', loadTrack);
-        durationInput.addEventListener('input', syncUI);
-        restDurationInput.addEventListener('input', syncUI);
-        loopInput.addEventListener('input', syncUI);
         window.onload = () => { updateLanguage(); loadTrack(); syncUI(); };
     </script>
 </body>
