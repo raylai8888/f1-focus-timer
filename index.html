@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aetheria Studio - Telemetry Control v0.0.8-beta</title>
+    <title>Aetheria Studio - Focus Timer v0.0.8-beta</title>
     <style>
         :root {
             --bg-main: #141923;
@@ -68,10 +68,12 @@
         }
         .feature-card {
             background: var(--panel-bg); border: 1px solid #2d3748; padding: 18px; border-radius: 12px; text-align: left;
+            cursor: pointer; transition: transform 0.2s, border-color 0.2s;
         }
+        .feature-card:hover { transform: translateY(-2px); border-color: var(--text-dark); }
         .feature-card h3 { margin: 0 0 10px 0; color: var(--neon-yellow); font-size: 1rem; border-bottom: 1px solid #3a465d; padding-bottom: 5px;}
-        .feature-card.mode-countdown h3 { color: var(--f1-red); }
-        .feature-card.mode-countup h3 { color: var(--neon-green); }
+        .feature-card.mode-countdown { border: 2px solid var(--f1-red); }
+        .feature-card.mode-countup { border: 2px solid var(--neon-green); }
         
         .feature-card p { margin: 0 0 6px 0; font-size: 0.75rem; color: #cbd5e0; line-height: 1.4; }
         .feature-card .warn { color: var(--f1-red); font-weight: bold; font-size: 0.75rem; background: rgba(255,59,48,0.1); padding: 6px; border-radius: 4px; display: inline-block; margin-top: 5px; line-height: 1.3; }
@@ -82,10 +84,10 @@
             padding: 15px 40px; font-size: 1.1rem; font-weight: 900; border-radius: 8px;
             cursor: pointer; margin-top: 25px; text-transform: uppercase; letter-spacing: 2px;
             box-shadow: 0 8px 20px rgba(255, 59, 48, 0.3); transition: all 0.2s;
+            display: none; /* 由選擇模式觸發 */
         }
-        .btn-launch:hover { background: #ff453a; transform: translateY(-2px); }
 
-        /* === 2. 主程式遙測儀表板樣式 === */
+        /* === 2. 主程式儀表板樣式 === */
         #telemetry-dashboard {
             display: none; 
             grid-template-columns: 240px 1fr;
@@ -178,39 +180,30 @@
     <div class="version-tag">v0.0.8-beta</div>
 
     <div id="intro-page">
-        <h1 data-i18n="introTitle">AETHERIA FOCUS <span>TELEMETRY</span></h1>
-        <div class="subtitle" data-i18n="introSub">Race Control Session Operations Manual</div>
+        <h1 data-i18n="introTitle">AETHERIA FOCUS <span>STUDIO</span></h1>
+        <div class="subtitle" data-i18n="introSub">請選擇今日的專注模式</div>
         
         <div class="features-grid">
-            <div class="feature-card mode-countdown">
-                <h3 data-i18n="cardCountDownTitle">⏱️ 🏁 倒計時：限時衝刺賽模式</h3>
-                <p data-i18n="cardCountDownL1">• <b>時間封頂：</b>設定固定時間（如 25 分鐘）進行倒數。</p>
-                <p data-i18n="cardCountDownL2">• <b>自動格子旗：</b>當時間歸零時，系統會自動切斷音效並鎖定畫面，立即結算本次測試數據報告。</p>
-                <p data-i18n="cardCountDownL3">• <b>中途放棄：</b>若在時間結束前按鈕離開，屬於「RETIRE（退賽 DNF）」，數據不予紀錄。</p>
+            <div class="feature-card mode-countdown" onclick="selectMode('countdown')">
+                <h3 data-i18n="cardCountDownTitle">⏱️ 倒計時模式（限時衝刺）</h3>
+                <p data-i18n="cardCountDownL1">• <b>自訂時間：</b>自由設定本次需要專注的總時間。</p>
+                <p data-i18n="cardCountDownL2">• <b>自動結算：</b>時間歸零時，系統會自動跳出讀書數據統計總表並關閉聲音。</p>
+                <p data-i18n="cardCountDownL3">• <b>中途放棄：</b>若未滿時間提早結束，本次數據將不會被保存。</p>
             </div>
             
-            <div class="feature-card mode-countup">
-                <h3 data-i18n="cardCountUpTitle">🏎️ 🟢 正計時：自由練習賽模式 (FP1)</h3>
-                <p data-i18n="cardCountUpL1">• <b>無限刷圈：</b>時間從 0 往上計時，無上限，適合進入深度工作心流狀態。</p>
-                <p data-i18n="cardCountUpL2">• <b>強制進站圈：</b>點擊「BOX / FINISH」不會立刻中斷，系統強制賽車必須跑完當前這一圈衝線，才算安全完賽、保存存檔。</p>
-                <p data-i18n="cardCountUpL3">• <b>最快單圈 (紫圈)：</b>專注越久車身越輕，單圈配速自動變快，僅在面板顯示最速那一圈。</p>
+            <div class="feature-card mode-countup" onclick="selectMode('countup')">
+                <h3 data-i18n="cardCountUpTitle">🏎️ 正計時模式（深度專注）</h3>
+                <p data-i18n="cardCountUpL1">• <b>無上限專注：</b>時間從零往上累加，適合進入長時間的心流狀態。</p>
+                <p data-i18n="cardCountUpL2">• <b>專注加速：</b>讀書越久，地圖上的虛擬小車會以 100% 速度瘋狂變快！</p>
+                <p data-i18n="cardCountUpL3">• <b>手動收尾：</b>必須親自點擊結束按鈕，等小車跑完最後一圈衝線後才會結算。</p>
             </div>
 
-            <div class="feature-card">
-                <h3 data-i18n="rule1Title">🔧 遙測基本限制與防呆</h3>
-                <p data-i18n="rule1L1">• <b>賽道選擇：</b>可任意加載巴林、日本鈴鹿或摩納哥向量線路。</p>
-                <p data-i18n="rule1L2">• <b>音效切換：</b>支援高質感模擬雨聲或保持極致安靜。</p>
-                <p class="warn" data-i18n="rule1Warn">⚠️ 警告：初始單圈秒數必須輸入「正整數」。嚴禁輸入 0、負數或帶小數點，否則遙測底層引擎會當機死機！</p>
-            </div>
-
-            <div class="feature-card">
-                <h3 data-i18n="rule4Title">⚖️ 版權與專案宣告</h3>
-                <p data-i18n="rule4L1">Copyright (c) 2026 raylai8888. 版權所有。</p>
-                <p class="license-text" data-i18n="rule4L2">本系統僅限非商業用途免費使用。本專案與一級方程式賽車官方（F1）、FIA 或任何真實車隊無任何隸屬或商業合作關係。</p>
+            <div class="feature-card" style="grid-column: 1 / span 2; border: 1px dashed #4a5568;">
+                <h3 data-i18n="rule1Title">🔧 環境與防呆設定</h3>
+                <p data-i18n="rule1L1">• <b>背景音頻：</b>可自由切換高質感模擬環境雨聲或保持安靜。</p>
+                <p class="warn" data-i18n="rule1Warn">⚠️ 警告：倒計時或初始秒數必須輸入「正整數」。嚴禁輸入 0、負數或小數點，以免計時邏輯當機！</p>
             </div>
         </div>
-
-        <button class="btn-launch" id="launchBtn" data-i18n="btnLaunch">開入維修區 Paddock</button>
     </div>
 
     <div id="telemetry-dashboard">
@@ -218,14 +211,14 @@
         <div id="paddockLock" class="lock-overlay" style="grid-column: 1; grid-row: 2; width:100%; height:100%; border-radius:10px;"></div>
 
         <div class="header-strip">
-            <h1 data-i18n="dbTitle">AETHERIA PRACTICE LOGIC</h1>
+            <h1 data-i18n="dbTitle">AETHERIA STUDY SYSTEM</h1>
             <div class="config-box">
                 <div>
-                    <label data-i18n="lblCircuit">CIRCUIT</label>
+                    <label data-i18n="lblCircuit">MAP</label>
                     <select id="trackSelect">
-                        <option value="bahrain" data-i18n="optBahrain">Bahrain GP</option>
-                        <option value="suzuka" data-i18n="optSuzuka">Suzuka Circuit</option>
-                        <option value="monaco" data-i18n="optMonaco">Circuit de Monaco</option>
+                        <option value="bahrain" data-i18n="optBahrain">Bahrain Map</option>
+                        <option value="suzuka" data-i18n="optSuzuka">Suzuka Map</option>
+                        <option value="monaco" data-i18n="optMonaco">Monaco Map</option>
                     </select>
                 </div>
                 <div>
@@ -235,9 +228,9 @@
                         <option value="none" data-i18n="optNone">Silent</option>
                     </select>
                 </div>
-                <div>
-                    <label id="lblFocus" data-i18n="lblFocus">BASE LAP TIME (SEC)</label>
-                    <input type="number" id="durationInput" value="80" min="10" max="600" step="1" style="width: 55px;">
+                <div id="durationWrapper">
+                    <label id="lblFocus" data-i18n="lblFocus">FOCUS TIME (SEC)</label>
+                    <input type="number" id="durationInput" value="60" min="10" max="7200" step="1" style="width: 65px;">
                 </div>
             </div>
         </div>
@@ -246,11 +239,11 @@
 
         <div class="main-telemetry">
             <div class="focus-timer-panel">
-                <div class="timer-label" id="timerLabel" data-i18n="lblStandby">GARAGE STANDBY</div>
+                <div class="timer-label" id="timerLabel" data-i18n="lblStandby">READY</div>
                 <div class="big-timer" id="timerBox">00:00</div>
                 <div class="action-bar">
-                    <button class="btn btn-go" id="startBtn" data-i18n="btnStart">GREEN LIGHT / OUT</button>
-                    <button class="btn btn-abort" id="abortBtn" disabled data-i18n="btnAbort">BOX / FINISH</button>
+                    <button class="btn btn-go" id="startBtn" data-i18n="btnStart">START FOCUS</button>
+                    <button class="btn btn-abort" id="abortBtn" disabled data-i18n="btnAbort">FINISH</button>
                 </div>
             </div>
 
@@ -261,11 +254,11 @@
                         <div class="data-val" id="dataStatus" style="color:var(--neon-blue);" data-i18n="stateReady">READY</div>
                     </div>
                     <div class="data-box">
-                        <div class="data-label" data-i18n="lblCurLap">Current Lap</div>
-                        <div class="data-val" id="dataLaps">Lap 1</div>
+                        <div class="data-label" data-i18n="lblCurLap">Current Cycle</div>
+                        <div class="data-val" id="dataLaps">Cycle 1</div>
                     </div>
-                    <div class="data-box" style="grid-column: 1 / span 2; border: 1px dashed var(--purple-fastest);">
-                        <div class="data-label" style="color:var(--purple-fastest);" data-i18n="lblFastestLap">⚡ FASTEST LAP RECORD</div>
+                    <div class="data-box" id="fastestLapWrapper" style="grid-column: 1 / span 2; border: 1px dashed var(--purple-fastest);">
+                        <div class="data-label" style="color:var(--purple-fastest);" data-i18n="lblFastestLap">⚡ BEST RECORD</div>
                         <div class="data-val" id="fastestLapBox" style="color:var(--purple-fastest); font-size:1.3rem;">NO RECORD</div>
                     </div>
                 </div>
@@ -278,7 +271,7 @@
                         <path id="trackProg" class="track-active" d="" />
                         <g id="carNode">
                             <circle class="car-circle" r="9" id="carCircle"/>
-                            <text class="car-text" dx="14" dy="5" id="carText">VER</text>
+                            <text class="car-text" dx="14" dy="5" id="carText">USER</text>
                         </g>
                     </svg>
                 </div>
@@ -294,66 +287,69 @@
     <script>
         const i18n = {
             en: {
-                introTitle: "AETHERIA FOCUS <span>TELEMETRY</span>", introSub: "Race Control Session Operations Manual",
-                cardCountDownTitle: "⏱️ 🏁 COUNTDOWN: SPRINT MODE",
-                cardCountDownL1: "• Time Limit: Fixed countdown duration (e.g., 25 mins) for sprint focus.",
-                cardCountDownL2: "• Chequered Flag: System automatically locks on 00:00 and fires reporting.",
-                cardCountDownL3: "• Abort Session: Terminating early triggers DNF (Did Not Finish) and discards data.",
-                cardCountUpTitle: "🏎️ 🟢 COUNT-UP: FREE PRACTICE MODE (FP1)",
-                cardCountUpL1: "• Infinite Stint: Time counts up from zero endlessly, ideal for deep deep focus flows.",
-                cardCountUpL2: "• In-Lap Mandatory: Clicking BOX will force the car to complete the current lap before saving.",
-                cardCountUpL3: "• Purple Lap: Fuel burn simulator speeds up target lap pacing as the session scales.",
-                rule1Title: "🔧 Core Telemetry Rules & Safeties", rule1L1: "• Circuit: Choose vector track layout.", rule1L2: "• Audio: Select rain or silent.", rule1Warn: "⚠️ WARNING: Target Lap time values must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!",
-                rule4Title: "⚖️ License & Declaration", rule4L1: "Copyright (c) 2026 raylai8888. All rights reserved.", rule4L2: "Free for non-commercial use only. Not affiliated with F1.",
-                btnLaunch: "開入維修區 Paddock", dbTitle: "AETHERIA PRACTICE LOGIC",
-                lblCircuit: "CIRCUIT", lblAudio: "AUDIO", lblFocus: "BASE LAP TIME (SEC)",
-                optBahrain: "Bahrain GP", optSuzuka: "Suzuka Circuit", optMonaco: "Monaco GP",
+                introTitle: "AETHERIA FOCUS <span>STUDIO</span>", introSub: "Please select your focus mode for today",
+                cardCountDownTitle: "⏱️ Countdown Mode (Sprint)",
+                cardCountDownL1: "• Custom Time: Set the total time needed for this focus session.",
+                cardCountDownL2: "• Auto Summary: System automatically pops up the summary report when time hits zero.",
+                cardCountDownL3: "• Terminate: Giving up early will discard all data for the current session.",
+                cardCountUpTitle: "🏎️ Count-Up Mode (Deep Focus)",
+                cardCountUpL1: "• Endless Flow: Time accumulates endlessly from zero for deep work flows.",
+                cardCountUpL2: "• Focus Acceleration: The longer you study, the faster the virtual car zooms by 100%!",
+                cardCountUpL3: "• Manual Finish: Press Finish to complete the current cycle before summary generation.",
+                rule1Title: "🔧 Environment & Safeties", rule1L1: "• Audio: Choose high-quality simulated rain or keep silent.",
+                rule1Warn: "⚠️ WARNING: Inputs must be POSITIVE INTEGERS. Do NOT use 0, negative numbers, or decimals!",
+                dbTitle: "AETHERIA STUDY SYSTEM",
+                lblCircuit: "MAP", lblAudio: "AUDIO", lblFocus: "FOCUS TIME (SEC)",
+                optBahrain: "Bahrain Map", optSuzuka: "Suzuka Map", optMonaco: "Monaco Map",
                 optRain: "Rain Noise", optNone: "Silent",
-                btnStart: "GREEN LIGHT / OUT", btnAbort: "BOX / FINISH",
-                lblState: "State", lblCurLap: "Current Lap", lblFastestLap: "⚡ FASTEST LAP RECORD",
-                stateReady: "READY", stateFocus: "FREE PRACTICE (FP1)", stateInLap: "IN-LAP (COOLING)",
-                lblStandby: "GARAGE STANDBY", lblTimerFocus: "LAP {lap} - FLYING LAP", lblTimerRest: "LAP {lap} - ENTERING PIT LANE",
+                btnStart: "START FOCUS", btnAbort: "FINISH",
+                lblState: "State", lblCurLap: "Current Cycle", lblFastestLap: "⚡ BEST RECORD",
+                stateReady: "READY", stateFocus: "FOCUSING", stateInLap: "FINALIZING CYCLE",
+                lblStandby: "READY", lblTimerFocus: "CYCLE {lap} - FOCUSING", lblTimerRest: "CYCLE {lap} - FINALIZING",
                 spkStart: "Start.", spkRest: "Rest.", spkFinish: "Finish.",
-                alertSum: "🏁 PRACTICE TELEMETRY REPORT 🏁\n-----------------------------\nDriver: {driver}\nTotal Stint: {totalTime}\n\n📊 RECAP:\n• Total Laps Completed: {laps} Laps\n• {fastest}\n\nSession finished successfully!"
+                alertSum: "🏁 FOCUS SUMMARY REPORT 🏁\n-----------------------------\n• User: {driver}\n• Total Focus Time: {totalTime}\n• Total Rest Time: {restTime}\n• Best Record: {fastest}\n-----------------------------\nSession finished successfully!"
             },
             zh: {
-                introTitle: "AETHERIA FOCUS <span>TELEMETRY</span>", introSub: "賽事控制維修區系統操作手冊",
-                cardCountDownTitle: "⏱️ 🏁 倒計時：限時衝刺賽模式",
-                cardCountDownL1: "• 時間封頂：設定固定時間（如 25 分鐘）進行倒數，高壓限時衝刺。",
-                cardCountDownDownL2: "• 自動格子旗：當時間歸零時，系統自動切斷音效並鎖定畫面，立即結算數據報告。",
-                cardCountDownL3: "• 中途放棄：若在時間結束前按鈕離開，屬於「RETIRE（退賽 DNF）」，數據不予紀錄。",
-                cardCountUpTitle: "🏎️ 🟢 正計時：自由練習賽模式 (FP1)",
-                cardCountUpL1: "• 無限刷圈：時間從 0 往上計時，無上限，適合進入深度極致工作心流狀態。",
-                cardCountUpL2: "• 強制進站圈：點擊「BOX / FINISH」不會立刻中斷，系統強制賽車跑完當前圈衝線才保存存檔。",
-                cardCountUpL3: "• 最快單圈 (紫圈)：專注越久車身越輕，單圈配速自動變快，僅顯示最速一圈歷史紀錄。",
-                rule1Title: "🔧 遙測基本限制與防呆", rule1L1: "• 賽道選擇：可任意加載巴林、日本鈴鹿或摩納哥向量線路。", rule1L2: "• 音效切換：支援高質感模擬雨聲或保持極致安靜。", rule1Warn: "⚠️ 警告：初始單圈秒數必須輸入「正整數」。嚴禁輸入 0、負數或帶小數點，否則遙測底層引擎會當機死機！",
-                rule4Title: "⚖️ 版權與專案宣告", rule4L1: "Copyright (c) 2026 raylai8888. 版權所有。", rule4L2: "本系統僅限非商業用途免費使用。本專案與一級方程式賽車官方（F1）、FIA 或任何真實車隊無任何隸屬或商業合作關係。",
-                btnLaunch: "開入維修區 Paddock", dbTitle: "AETHERIA PRACTICE LOGIC / 自由練習賽遙測系統",
-                lblCircuit: "CIRCUIT / 賽道選擇", lblAudio: "AUDIO / 音效模式", lblFocus: "BASE LAP TIME / 初始單圈秒數(正整數)",
-                optBahrain: "Bahrain GP (巴林站)", optSuzuka: "Suzuka Circuit (日本鈴鹿站)", optMonaco: "Circuit de Monaco (摩納哥站)",
-                optRain: "Rain Noise / 專注雨聲", optNone: "Silent / 保持安靜",
-                btnStart: "GREEN LIGHT / 出車測試", btnAbort: "BOX / 召回進站",
-                lblState: "當前狀態", lblCurLap: "當前圈數", lblFastestLap: "⚡ 最快單圈官方紀錄 (FASTEST LAP)",
-                stateReady: "READY / 整備就緒", stateFocus: "FREE PRACTICE / 自由練習計時中", stateInLap: "IN-LAP / 進站圈收尾中",
-                lblStandby: "GARAGE STANDBY / 車庫整備中", lblTimerFocus: "LAP {lap} - 刷圈專注進行中", lblTimerRest: "LAP {lap} - 召回減速開回維修區",
+                introTitle: "AETHERIA FOCUS <span>STUDIO</span>", introSub: "請選擇今日的專注模式",
+                cardCountDownTitle: "⏱️ 倒計時模式（限時衝刺）",
+                cardCountDownL1: "• 自訂時間：自由設定本次需要專注的總時間。",
+                cardCountDownL2: "• 自動結算：時間歸零時，系統會自動跳出讀書數據統計總表並關閉聲音。",
+                cardCountDownL3: "• 中途放棄：若未滿時間提早結束，本次數據將不會被保存。",
+                cardCountUpTitle: "🏎️ 正計時模式（深度專注）",
+                cardCountUpL1: "• 無限專注：時間從零往上累加，適合進入長時間的心流狀態。",
+                cardCountUpL2: "• 專注加速：讀書越久，地圖上的虛擬小車會以 100% 速度瘋狂變快！",
+                cardCountUpL3: "• 手動收尾：必須親自點擊結束按鈕，等小車跑完最後一圈衝線後才會結算。",
+                rule1Title: "🔧 環境與防呆設定", rule1L1: "• 背景音頻：可自由切換高質感環境雨聲或保持安靜。",
+                rule1Warn: "⚠️ 警告：時間數值必須輸入「正整數」。嚴禁輸入 0、負數或小數點，以免計時邏輯當機！",
+                dbTitle: "AETHERIA STUDY SYSTEM / 讀書專注系統",
+                lblCircuit: "MAP / 地圖選擇", lblAudio: "AUDIO / 音效模式", lblFocus: "倒計時設定 (秒)",
+                optBahrain: "Bahrain Map (巴林)", optSuzuka: "Suzuka Map (鈴鹿)", optMonaco: "Monaco Map (摩納哥)",
+                optRain: "Rain Noise / 環境雨聲", optNone: "Silent / 保持安靜",
+                btnStart: "START FOCUS / 開始專注", btnAbort: "FINISH / 結束專注",
+                lblState: "當前狀態", lblCurLap: "當前圈數", lblFastestLap: "⚡ 最佳紀錄",
+                stateReady: "READY / 準備就緒", stateFocus: "FOCUSING / 專注進行中", stateInLap: "FINALIZING / 正在跑完最後一圈",
+                lblStandby: "READY / 準備就緒", lblTimerFocus: "第 {lap} 圈 - 專注進行中", lblTimerRest: "第 {lap} 圈 - 正在衝線收尾",
                 spkStart: "開始。", spkRest: "休息。", spkFinish: "結束。",
-                alertSum: "🏁 官方練習賽遙測數據總結 🏁\n-----------------------------\n出場車手: {driver}\n總測試時間: {totalTime}\n\n📊 刷圈統計：\n• 成功完賽圈數: {laps} 圈\n• {fastest}\n\n順利完成進站收尾！"
+                alertSum: "🏁 讀書專注數據總結報告 🏁\n-----------------------------\n• 使用者: {driver}\n• 總專注時間: {totalTime}\n• 總休息時間: {restTime}\n• 最佳紀錄: {fastest}\n-----------------------------\n順利完賽，繼續保持！"
             }
         };
 
+        let selectedAppMode = 'countdown'; // 'countdown' or 'countup'
         let currentLang = 'en';
         const fullGrid = [
             { team: "Red Bull", color: "#0C1F45", drivers: [{n:"Max Verstappen", c:"VER"}, {n:"Liam Lawson", c:"LAW"}] },
             { team: "Ferrari", color: "#DC0000", drivers: [{n:"Lewis Hamilton", c:"HAM"}, {n:"Charles Leclerc", c:"LEC"}] },
             { team: "McLaren", color: "#FF8700", drivers: [{n:"Lando Norris", c:"NOR"}, {n:"Oscar Piastri", c:"PIA"}] },
             { team: "Mercedes", color: "#00A19B", drivers: [{n:"George Russell", c:"RUS"}, {n:"Kimi Antonelli", c:"ANT"}] },
-            { team: "Aston Martin", color: "#006F62", drivers: [{n:"Fernando Alonso", c:"ALO"}, {n:"Lance Stroll", c:"STR"}] },
-            { team: "Audi F1", color: "#EE122B", drivers: [{n:"Nico Hulkenberg", c:"HUL"}, {n:"Gabriel Bortoleto", c:"BOR"}] },
-            { team: "Williams", color: "#005BA6", drivers: [{n:"Carlos Sainz", c:"SAI"}, {n:"Alex Albon", c:"ALB"}] },
-            { team: "Cadillac", color: "#DDDDDD", drivers: [{n:"Sergio Perez", c:"PER"}, {n:"Valtteri Bottas", c:"BOT"}] },
-            { team: "Racing Bulls", color: "#6692ff", drivers: [{n:"Franco Colapinto", c:"COL"}, {n:"Arvid Lindblad", c:"LIN"}] },
-            { team: "Haas", color: "#787878", drivers: [{n:"Oliver Bearman", c:"BEA"}, {n:"Esteban Ocon", c:"OCO"}] }
+            { team: "Aston Martin", color: "#006F62", drivers: [{n:"Fernando Alonso", c:"ALO"}, {n:"Lance Stroll", c:"STR"}] }
         ];
+
+        // 地圖預設標準秒數 (問題五：正計時死碼設定)
+        const trackDefaultSeconds = {
+            bahrain: 78,
+            suzuka: 90,
+            monaco: 71
+        };
 
         let activeDriver = fullGrid[0].drivers[0]; let activeTeam = fullGrid[0];
         let isSystemRunning = false; let isInLapState = false; let currentLap = 1;
@@ -362,15 +358,16 @@
         let audioCtx = null; let whiteNoiseNode = null;
 
         let bestLapNum = 0; let bestLapTimeMs = Infinity;
+        let countdownInitialMs = 0;
 
         const langSelect = document.getElementById('langSelect');
         const introPage = document.getElementById('intro-page');
         const telemetryDashboard = document.getElementById('telemetry-dashboard');
-        const launchBtn = document.getElementById('launchBtn');
         const paddock = document.getElementById('paddockWall');
         const trackSelect = document.getElementById('trackSelect');
         const audioSelect = document.getElementById('audioSelect');
         const durationInput = document.getElementById('durationInput');
+        const durationWrapper = document.getElementById('durationWrapper');
         const timerBox = document.getElementById('timerBox');
         const startBtn = document.getElementById('startBtn');
         const abortBtn = document.getElementById('abortBtn');
@@ -382,6 +379,7 @@
         const dataStatus = document.getElementById('dataStatus');
         const dataLaps = document.getElementById('dataLaps');
         const fastestLapBox = document.getElementById('fastestLapBox');
+        const fastestLapWrapper = document.getElementById('fastestLapWrapper');
         const timerLabel = document.getElementById('timerLabel');
         const configLock = document.getElementById('configLock');
         const paddockLock = document.getElementById('paddockLock');
@@ -397,11 +395,22 @@
         }
         langSelect.addEventListener('change', updateLanguage);
 
-        launchBtn.addEventListener('click', () => {
+        function selectMode(mode) {
+            selectedAppMode = mode;
             introPage.style.display = 'none';
             telemetryDashboard.style.display = 'grid';
+            
+            // 依模式調整控制面板 (問題五)
+            if (selectedAppMode === 'countup') {
+                durationWrapper.style.display = 'none';
+                fastestLapWrapper.style.display = 'block';
+            } else {
+                durationWrapper.style.display = 'block';
+                fastestLapWrapper.style.display = 'none'; // 倒計時不記錄單圈
+            }
+            
             loadTrack(); syncUI();
-        });
+        }
 
         function speakTeamRadio(type) {
             if ('speechSynthesis' in window) {
@@ -409,11 +418,8 @@
                 let txt = i18n[currentLang][type] || "";
                 const utterance = new SpeechSynthesisUtterance(txt);
                 utterance.lang = currentLang === 'en' ? 'en-GB' : 'zh-TW';
-                
                 const voices = window.speechSynthesis.getVoices();
-                let selectedVoice = voices.find(v => v.lang.startsWith(currentLang === 'en' ? 'en' : 'zh') && 
-                    (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('david') || v.name.toLowerCase().includes('kangkang') || v.name.toLowerCase().includes('yating') === false));
-                
+                let selectedVoice = voices.find(v => v.lang.startsWith(currentLang === 'en' ? 'en' : 'zh') && !v.name.toLowerCase().includes('yating'));
                 if (selectedVoice) utterance.voice = selectedVoice;
                 window.speechSynthesis.speak(utterance);
             }
@@ -477,10 +483,10 @@
         function syncUI() {
             carText.textContent = activeDriver.c; carCircle.style.fill = activeTeam.color; 
             durationInput.value = Math.floor(durationInput.value);
-            dataLaps.textContent = `Lap ${currentLap}`;
+            dataLaps.textContent = `${currentLang === 'zh' ? '第' : 'Cycle'} ${currentLap} ${currentLang === 'zh' ? '圈' : ''}`;
             
             if (!isSystemRunning) {
-                timerBox.textContent = "00:00";
+                timerBox.textContent = selectedAppMode === 'countdown' ? fmt(parseInt(durationInput.value) * 1000) : "00:00";
                 dataStatus.innerHTML = i18n[currentLang].stateReady;
                 timerLabel.innerHTML = i18n[currentLang].lblStandby;
             } else {
@@ -493,8 +499,8 @@
                 }
             }
 
-            if (bestLapNum > 0) {
-                fastestLapBox.textContent = `Lap ${bestLapNum} (${fmt(bestLapTimeMs)})`;
+            if (bestLapNum > 0 && selectedAppMode === 'countup') {
+                fastestLapBox.textContent = `Cycle ${bestLapNum} (${fmt(bestLapTimeMs)})`;
             } else {
                 fastestLapBox.textContent = currentLang === 'en' ? "NO RECORD" : "暫無紀錄";
             }
@@ -517,29 +523,51 @@
             totalElapsedMs += delta;
             currentLapElapsedMs += delta;
 
-            timerBox.textContent = fmt(totalElapsedMs);
+            if (selectedAppMode === 'countdown') {
+                // 倒計時邏輯
+                let remainingMs = Math.max(0, countdownInitialMs - totalElapsedMs);
+                timerBox.textContent = fmt(remainingMs);
 
-            let ratio = Math.min(1, currentLapElapsedMs / currentLapTargetMs);
-            trackProg.style.strokeDashoffset = pathLength - (pathLength * ratio);
-            const pt = trackProg.getPointAtLength(pathLength * ratio);
-            carNode.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+                // 小車動態隨時間流逝前進
+                let ratio = Math.min(1, totalElapsedMs / countdownInitialMs);
+                trackProg.style.strokeDashoffset = pathLength - (pathLength * ratio);
+                const pt = trackProg.getPointAtLength(pathLength * ratio);
+                carNode.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
 
-            if (currentLapElapsedMs >= currentLapTargetMs) {
-                if (currentLapTargetMs < bestLapTimeMs) {
-                    bestLapTimeMs = currentLapTargetMs;
-                    bestLapNum = currentLap;
-                }
-
-                if (isInLapState) {
-                    completePracticeSession();
+                if (remainingMs <= 0) {
+                    completeFocusSession();
                     return;
                 }
+            } else {
+                // 正計時邏輯
+                timerBox.textContent = fmt(totalElapsedMs);
 
-                currentLap++;
-                currentLapElapsedMs = 0;
-                let nextTargetSec = Math.max(15, parseInt(durationInput.value) - (currentLap - 1) * 2);
-                currentLapTargetMs = nextTargetSec * 1000;
-                syncUI();
+                let ratio = Math.min(1, currentLapElapsedMs / currentLapTargetMs);
+                trackProg.style.strokeDashoffset = pathLength - (pathLength * ratio);
+                const pt = trackProg.getPointAtLength(pathLength * ratio);
+                carNode.setAttribute('transform', `translate(${pt.x}, ${pt.y})`);
+
+                if (currentLapElapsedMs >= currentLapTargetMs) {
+                    // 記錄最佳單圈
+                    if (currentLapTargetMs < bestLapTimeMs) {
+                        bestLapTimeMs = currentLapTargetMs;
+                        bestLapNum = currentLap;
+                    }
+
+                    if (isInLapState) {
+                        completeFocusSession();
+                        return;
+                    }
+
+                    currentLap++;
+                    currentLapElapsedMs = 0;
+                    
+                    // 問題三修正：100%加速，專注越久秒數減半（越跑越快）
+                    let baseSec = trackDefaultSeconds[trackSelect.value];
+                    let nextTargetSec = Math.max(1, baseSec / Math.pow(2, currentLap - 1)); 
+                    currentLapTargetMs = nextTargetSec * 1000;
+                    syncUI();
+                }
             }
 
             animationId = requestAnimationFrame(loopEngine);
@@ -551,7 +579,16 @@
                 currentLap = 1; totalElapsedMs = 0; currentLapElapsedMs = 0; lastTimestamp = 0;
                 bestLapNum = 0; bestLapTimeMs = Infinity;
 
-                currentLapTargetMs = parseInt(durationInput.value) * 1000;
+                if (selectedAppMode === 'countdown') {
+                    countdownInitialMs = parseInt(durationInput.value) * 1000;
+                    abortBtn.textContent = currentLang === 'zh' ? "中途放棄" : "ABORT";
+                } else {
+                    // 正計時初始秒數讀取內建死碼 (問題五)
+                    let baseSec = trackDefaultSeconds[trackSelect.value];
+                    currentLapTargetMs = baseSec * 1000;
+                    abortBtn.textContent = i18n[currentLang].btnAbort;
+                }
+
                 timerBox.style.color = "var(--neon-yellow)";
                 startBtn.style.display = 'none'; abortBtn.disabled = false;
                 configLock.style.display = 'block'; paddockLock.style.display = 'block';
@@ -565,28 +602,49 @@
         });
 
         abortBtn.addEventListener('click', () => {
-            if (isSystemRunning && !isInLapState) {
-                isInLapState = true;
-                abortBtn.classList.add('in-lap-active');
-                syncUI();
-                speakTeamRadio('spkRest');
+            if (isSystemRunning) {
+                if (selectedAppMode === 'countdown') {
+                    // 倒計時中途放棄不儲存 (問題一精神)
+                    stopAudioGenerator(); cancelAnimationFrame(animationId);
+                    alert(currentLang === 'zh' ? "已中途放棄，本次專注不予記錄。" : "Session aborted. Data discarded.");
+                    resetSystem();
+                } else {
+                    // 正計時手動點擊進站收尾圈
+                    if (!isInLapState) {
+                        isInLapState = true;
+                        abortBtn.classList.add('in-lap-active');
+                        syncUI();
+                        speakTeamRadio('spkRest');
+                    }
+                }
             }
         });
 
-        function completePracticeSession() {
+        function completeFocusSession() {
             stopAudioGenerator(); cancelAnimationFrame(animationId);
             speakTeamRadio('spkFinish');
 
             setTimeout(() => {
-                let fastestText = currentLang === 'en' 
-                    ? `Fastest Lap: Lap ${bestLapNum} (${fmt(bestLapTimeMs)})` 
-                    : `最快圈速: 第 ${bestLapNum} 圈 (${fmt(bestLapTimeMs)})`;
+                // 問題二：嚴格遵守總表格式
+                let finalFocusTime = "";
+                let finalRestTime = "";
+                let finalBestLap = "";
+
+                if (selectedAppMode === 'countdown') {
+                    finalFocusTime = fmt(countdownInitialMs);
+                    finalRestTime = "---";  // 倒計時無指定休息時間
+                    finalBestLap = "---";   // 倒計時不計算單圈
+                } else {
+                    finalFocusTime = fmt(totalElapsedMs - currentLapElapsedMs); // 扣掉最後一圈衝線前的時間視為純專注
+                    finalRestTime = fmt(currentLapElapsedMs);                   // 最後一圈視為休息收尾時間
+                    finalBestLap = `Cycle ${bestLapNum} (${fmt(bestLapTimeMs)})`;
+                }
                 
                 const sum = i18n[currentLang].alertSum
                     .replace('{driver}', activeDriver.n)
-                    .replace('{totalTime}', fmt(totalElapsedMs))
-                    .replace('{laps}', currentLap)
-                    .replace('{fastest}', fastestText);
+                    .replace('{totalTime}', finalFocusTime)
+                    .replace('{restTime}', finalRestTime)
+                    .replace('{fastest}', finalBestLap);
                 
                 alert(sum); 
                 resetSystem();
@@ -600,11 +658,13 @@
             startBtn.style.display = 'block'; abortBtn.disabled = true;
             abortBtn.classList.remove('in-lap-active');
             configLock.style.display = 'none'; paddockLock.style.display = 'none';
-            updateLanguage(); loadTrack();
+            introPage.style.display = 'flex';
+            telemetryDashboard.style.display = 'none';
+            updateLanguage();
         }
 
         trackSelect.addEventListener('change', loadTrack);
-        window.onload = () => { updateLanguage(); loadTrack(); syncUI(); };
+        window.onload = () => { updateLanguage(); };
     </script>
 </body>
 </html>
